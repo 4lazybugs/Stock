@@ -2,16 +2,16 @@ import pandas as pd
 import numpy as np
 
 # 주가
-df_price = pd.read_excel("../data/010140/PRICE_day.xlsx") 
+df_price = pd.read_excel("data/010140/PRICE_day.xlsx") 
 df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
 
 # 자기자본
-df_ni = pd.read_excel("../data/010140/NI_year.xlsx") 
+df_ni = pd.read_excel("data/010140/NI_year.xlsx") 
 date_ni = pd.to_datetime(df_ni['date']) # str -> datetime
 date_ni = date_ni.dt.strftime('%Y-%m').values # series -> numpy array
 
 # 발행주식수
-df_shs = pd.read_excel("../data/010140/SHS_month.xlsx")
+df_shs = pd.read_excel("data/010140/SHS_month.xlsx")
 date_shs = pd.to_datetime(df_shs['date']) # str -> datetime
 date_shs = date_shs.dt.strftime('%Y-%m').values # series -> numpy array
 
@@ -46,8 +46,8 @@ for i in range(len(df_price)):
 
 # save to excel : eps
 df_eps['date'] = df_eps['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_eps.to_excel("../data/010140/EPS_day.xlsx", index=False) # save to excel
+df_eps.to_excel("data/010140/EPS_day.xlsx", index=False) # save to excel
 
 # save to excel : per
 df_per['date'] = df_per['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_per.to_excel("../data/010140/PER_day.xlsx", index=False) # save to excel
+df_per.to_excel("data/010140/PER_day.xlsx", index=False) # save to excel

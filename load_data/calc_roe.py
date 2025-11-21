@@ -2,16 +2,16 @@ import pandas as pd
 import numpy as np
 
 # 주가
-df_price = pd.read_excel("../data/010140/PRICE_day.xlsx") 
+df_price = pd.read_excel("data/010140/PRICE_day.xlsx") 
 df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
 
 # 자기자본
-df_ni = pd.read_excel("../data/010140/NI_year.xlsx") 
+df_ni = pd.read_excel("data/010140/NI_year.xlsx") 
 date_ni = pd.to_datetime(df_ni['date']) # str -> datetime
 date_ni = date_ni.dt.strftime('%Y-%m').values # series -> numpy array
 
 # 발행주식수
-df_equ = pd.read_excel("../data/010140/EQU_month.xlsx")
+df_equ = pd.read_excel("data/010140/EQU_month.xlsx")
 date_equ = pd.to_datetime(df_equ['date']) # str -> datetime
 date_equ = date_equ.dt.strftime('%Y-%m').values # series -> numpy array
 
@@ -41,4 +41,4 @@ for i in range(len(df_price)):
 
 # save to excel : roe
 df_roe['date'] = df_roe['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_roe.to_excel("../data/010140/ROE_day.xlsx", index=False) # save to excel
+df_roe.to_excel("data/010140/ROE_day.xlsx", index=False) # save to excel

@@ -53,23 +53,23 @@ if __name__ == "__main__":
     equ_metric = EQU(api_key=API_KEY)
     ni_metric = NI(api_key=API_KEY)
     
-    os.makedirs("../data", exist_ok=True)
+    os.makedirs("data", exist_ok=True)
 
     
     # 1) 발행주식수
     rows_sh = [row(shs_metric, d) for d in dates]
     df_sh = pd.DataFrame(rows_sh, columns=["date", SHS.label])
-    df_sh.to_excel(f"../data/{stk_code}/SHS_month.xlsx", index=False)
+    df_sh.to_excel(f"data/{stk_code}/SHS_month.xlsx", index=False)
 
     # 2) EQU
     rows_equ = [row(equ_metric, d) for d in dates]
     df_equ = pd.DataFrame(rows_equ, columns=["date", EQU.label]) 
-    df_equ.to_excel(f"../data/{stk_code}/EQU_month.xlsx", index=False)
+    df_equ.to_excel(f"data/{stk_code}/EQU_month.xlsx", index=False)
     
 
     # 3) NI
     rows_ni = [row(ni_metric, d) for d in dates]
     df_ni = pd.DataFrame(rows_ni, columns=["date", NI.label]) 
-    df_ni.to_excel(f"../data/{stk_code}/NI_year.xlsx", index=False)
+    df_ni.to_excel(f"data/{stk_code}/NI_year.xlsx", index=False)
 
     print("✅ 모든 DART 데이터 저장 완료.")

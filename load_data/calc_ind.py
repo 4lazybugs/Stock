@@ -38,7 +38,7 @@ def last_of_quarter(df, cols):
 if __name__ == "__main__":
     corp_code = "010140"              # 폴더 이름과 일치해야 함 (load_price / load_dart 저장 규칙)
     start, end = "20200101", "20221231"
-    folder = f"../data/{corp_code}"
+    folder = f"data/{corp_code}"
 
     data = DataStore(folder)
 
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     # (선택) PER도 보고 싶으면 주석 해제
     # base["PER"] = base["CLOSE"] / (base["EPS"] + 1e-6)
 
-    os.makedirs(f"../data/{corp_code}", exist_ok=True)
-    out = f"../data/{corp_code}/merged.xlsx"
+    os.makedirs(f"data/{corp_code}", exist_ok=True)
+    out = f"data/{corp_code}/merged.xlsx"
     base.to_excel(out, index=False)
     print(f"✅ 계산 및 저장 완료: {out}  | NI source = {ni_source_name}")
