@@ -67,7 +67,7 @@ for code in codes:
         time.sleep(0.5)
 
     # ✅ 종목별로 개별 파일 저장
-    save_dir = f'../data/{code}'
+    save_dir = f'data/{code}'
     os.makedirs(save_dir, exist_ok=True)
     save_path = os.path.join(save_dir, f"PRICE_day.xlsx")
     wb.save(save_path)

@@ -2,16 +2,16 @@ import pandas as pd
 import numpy as np
 
 # 주가
-df_price = pd.read_excel("../data/010140/PRICE_day.xlsx") 
+df_price = pd.read_excel("data/010140/PRICE_day.xlsx") 
 df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
 
 # 자기자본
-df_equ = pd.read_excel("../data/010140/EQU_month.xlsx") 
+df_equ = pd.read_excel("data/010140/EQU_month.xlsx") 
 date_equ = pd.to_datetime(df_equ['date']) # str -> datetime
 date_equ = date_equ.dt.strftime('%Y-%m').values # series -> numpy array
 
 # 발행주식수
-df_shs = pd.read_excel("../data/010140/SHS_month.xlsx")
+df_shs = pd.read_excel("data/010140/SHS_month.xlsx")
 date_shs = pd.to_datetime(df_shs['date']) # str -> datetime
 date_shs = date_shs.dt.strftime('%Y-%m').values # series -> numpy array
 
@@ -40,4 +40,4 @@ for i in range(len(df_price)):
         df_pbr.loc[i, 'PBR'] = price / bvps # calc PBR
 
 df_pbr['date'] = df_pbr['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_pbr.to_excel("../data/010140/PBR_day.xlsx", index=False) # save to excel
+df_pbr.to_excel("data/010140/PBR_day.xlsx", index=False) # save to excel

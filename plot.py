@@ -13,4 +13,4 @@ def plot_data(df: pd.DataFrame, x_col: str, y_col: str, title: str = "Data Plot"
 
 df = pd.read_excel('../data/010140/merged.xlsx')
 plot_data(df, x_col='date', y_col='PBR', title='PBR Over Time')
-
+plot_data(df, x_col='date', y_col='ROE', title='ROE Over Time')
