@@ -1,0 +1,12 @@
+# python == 3.10
+
+
+## condas
+# conda install pandas -y
+# conda install urllib3 -y
+# conda install requests -y
+# conda install openpyxl -y
+# conda install beautifulsoup4 -y
+
+
+## pip
