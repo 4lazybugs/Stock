@@ -6,11 +6,6 @@ class NI(BaseMetric):
     json_pth = "fnlttSinglAcntAll"
     label = "NI"
 
-    @staticmethod
-    def map_reprt_by_date(d: _date) -> tuple[str, str]:
-        # 전년도 연간 고정
-        return str(d.year - 1), "11014"
-
     # ❗ NI 전용: CFS 실패 시 FS도 시도 (연간 성공률↑)
     def _request(self, corp_code: str, by: str, rc: str, sort: str = "date"):
         url = "https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json"
@@ -29,30 +24,6 @@ class NI(BaseMetric):
             if j.get("status") == "000" and j.get("list"):
                 return j
         return j  # 마지막 응답 반환
-
-    # ❗ BaseMetric의 폴백 체인을 쓰지 않고, 연간만(필요시 3Q) 시도
-    def fetch_with_fallback(self, corp_code: str, date: _date):
-        tried = []
-        by = str(date.year - 1)
-
-        # 1) 연간
-        data = self._request(corp_code, by, "11014")
-        tried.append((by, "11014", data.get("status"), len(data.get("list", []))))
-        v = self.parse(data)
-        if v is not None:
-            print(f"{date} | {self.json_pth} best-pick -> {v} (by={by}, rc=11014)")
-            return v, by, "11014", tried
-
-        # 2) (옵션) 전년 3Q만 폴백
-        data = self._request(corp_code, by, "11013")
-        tried.append((by, "11013", data.get("status"), len(data.get("list", []))))
-        v = self.parse(data)
-        if v is not None:
-            print(f"{date} | {self.json_pth} fallback -> {v} (by={by}, rc=11013)")
-            return v, by, "11013", tried
-
-        print(f"{date} | {self.json_pth} FAIL (no annual/3Q) tried={tried}")
-        return None, by, "11014", tried
 
     def parse(self, data: dict):
         if not data or data.get("status") != "000":

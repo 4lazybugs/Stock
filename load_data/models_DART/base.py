@@ -1,5 +1,6 @@
 import os
 import requests
+import datetime
 from datetime import date as _date
 
 # -----------------------
@@ -44,20 +45,19 @@ class BaseMetric:
         """
         y, m, day = d.year, d.month, d.day
 
-        # 1/1 ~ 3/31: 전년도 연간 사업보고서(1~12월 누적)
-        if (m < 4) or (m == 4 and day == 0):  
-            return str(y - 1), "11014"
-        # 4/1 ~ 5/15: 전년도 연간 사업보고서(1~12월 누적)
-        if (m == 4) or (m == 5 and day <= 15):
-            return str(y - 1), "11014"
-        # 5/16 ~ 8/14: 당해년도 1분기 보고서(1~3월 누적)
-        if (m == 5 and day >= 16) or (m in (6, 7)) or (m == 8 and day <= 14):
+        # 1분기 보고서(1~3월 누적)
+        if (m >= 1 and m <= 3):  
             return str(y), "11011"
-        # 8/15 ~ 11/14: 당해년도 반기 보고서(1~6월 누적)
-        if (m == 8 and day >= 15) or (m in (9, 10)) or (m == 11 and day <= 14):
+        # 반기 보고서(1~6월 누적)
+        if (m >= 4 and m <= 6):
             return str(y), "11012"
-        # 11/15 ~ 12/31: 당해년도 3분기보고서(1~9월 누적)
-        return str(y), "11013"
+        # 3분기 보고서(1~9월 누적)
+        if (m >= 7 and m <= 9):
+            return str(y), "11013"
+        # 사업보고서 (1~12월 누적)
+        if (m >= 10 and m <= 12):
+            return str(y+1), "11014" # 당해년도 사업보고서는 익년 3월에 공시됨
+
 
     # 서브클래스가 구현
     def parse(self, data: dict):
@@ -87,56 +87,15 @@ class BaseMetric:
             return val, by, rc
 
         by0, rc0 = self.map_reprt_by_date(date)   # 날짜→목표 (연도, 보고서코드)
-        tried = []
-        candidates = []
+        debug_info = []
 
-        # 0) 목표 정확 조합 먼저
         val, by_ok, rc_ok = try_once(by0, rc0)
-        tried.append((by_ok, rc_ok))
+        
         if val is not None:
-            candidates.append((val, by_ok, rc_ok))
+            debug_info.append((val, by_ok, rc_ok))
+        if val is None:
+            print(f"{date} | {self.json_pth} FAIL to find data for {date.year}")
+            return val, by_ok, rc_ok, debug_info
 
-        # 코드 위상(1Q<2Q<3Q<사업보고서)
-        rc_rank = {"11011": 1, "11012": 2, "11013": 3, "11014": 4}
-        tgt_rank = rc_rank[rc0]
-
-        # 1) 같은 해에서 '목표 코드보다 늦지 않은' 코드만 시도 (= rc_rank <= tgt_rank)
-        same_year_order = ["11013", "11012", "11011"]  # 뒤에서 필터로 컷
-        for rc in same_year_order:
-            if rc == rc0:
-                continue
-            if rc_rank[rc] > tgt_rank:   # 목표보다 '더 늦은' 분기는 금지
-                continue
-            val, by_ok, rc_ok = try_once(by0, rc)
-            tried.append((by_ok, rc_ok))
-            if val is not None:
-                candidates.append((val, by_ok, rc_ok))
-
-        # 2) 전년 사업보고서(11014)만 허용
-        val, by_ok, rc_ok = try_once(str(date.year - 1), "11014")
-        tried.append((by_ok, rc_ok))
-        if val is not None:
-            candidates.append((val, by_ok, rc_ok))
-
-        if not candidates:
-            print(f"{date} | {self.json_pth} FAIL (no value) tried={tried}")
-            return None, by0, rc0, tried
-
-        # 3) 최종 선택: '목표 시점'을 넘지 않는 후보만 남기고 그 중 가장 최근
-        def not_later_than_target(by, rc):
-            by = int(by); by0_i = int(by0)
-            if by < by0_i:
-                return True
-            if by > by0_i:
-                return False
-            return rc_rank[rc] <= tgt_rank
-
-        allowed = [(v, by, rc) for (v, by, rc) in candidates if not_later_than_target(by, rc)]
-        if not allowed:
-            print(f"{date} | {self.json_pth} FAIL (only later reports found) tried={tried}")
-            return None, by0, rc0, tried
-
-        best = max(allowed, key=lambda x: (int(x[1]), rc_rank[x[2]]))
-        val, by_ok, rc_ok = best
-        print(f"{date} | {self.json_pth} best-pick -> {val} (by={by_ok}, rc={rc_ok})")
-        return val, by_ok, rc_ok, tried
+        print(f"{date} | {self.json_pth} found {val} (by={by_ok}, rc={rc_ok})")
+        return val, by_ok, rc_ok, debug_info
