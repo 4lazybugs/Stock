@@ -6,25 +6,6 @@ class NI(BaseMetric):
     json_pth = "fnlttSinglAcntAll"
     label = "NI"
 
-    # ❗ NI 전용: CFS 실패 시 FS도 시도 (연간 성공률↑)
-    def _request(self, corp_code: str, by: str, rc: str, sort: str = "date"):
-        url = "https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json"
-        base = {
-            "crtfc_key": self.api_key,
-            "corp_code": corp_code,
-            "bsns_year": by,
-            "reprt_code": rc,
-            "sort": sort,
-        }
-        for fs in ("CFS", "FS"):
-            params = dict(base, fs_div=fs)
-            resp = requests.get(url, params=params, timeout=30)
-            resp.raise_for_status()
-            j = resp.json()
-            if j.get("status") == "000" and j.get("list"):
-                return j
-        return j  # 마지막 응답 반환
-
     def parse(self, data: dict):
         if not data or data.get("status") != "000":
             return None
