@@ -47,7 +47,9 @@ def row(metric, d: date):
 if __name__ == "__main__":    
     API_KEY = "3957b81997e850b1a08e448a63e193dd0f630a25"
     stk_code, corp_code = "010140", "00126478"  # 삼성중공업 예시
-    dates = generate_dates("2024-08-01", "2025-10-31", mode="month")
+    target_date_str = ["2023-12-01", "2025-11-18"]
+    start_date, end_date = target_date_str[0], target_date_str[1]
+    dates = generate_dates(start_date, end_date, mode="month")
 
     shs_metric = SHS(api_key=API_KEY)
     equ_metric = EQU(api_key=API_KEY)
@@ -55,10 +57,10 @@ if __name__ == "__main__":
     
     os.makedirs("data", exist_ok=True)
 
-    
     # 1) 발행주식수
     rows_sh = [row(shs_metric, d) for d in dates]
     df_sh = pd.DataFrame(rows_sh, columns=["date", SHS.label])
+    df_sh[SHS.label] = df_sh[SHS.label].ffill() # 결측치는 직전 값으로 채우기
     df_sh.to_excel(f"data/{stk_code}/SHS_month.xlsx", index=False)
 
     # 2) EQU

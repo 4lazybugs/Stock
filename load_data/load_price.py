@@ -16,18 +16,6 @@ headers = {
 session = requests.Session()
 session.headers.update(headers)
 
-codes = [
-    #'042660',  # 한화오션
-    #'009540',  # HD한국조선해양
-    '010140',  # 삼성중공업
-    #'010620',  # 현대미포조선
-    #'329180',  # 현대중공업
-    #'097230',  # HJ중공업
-    #'238490',  # 현대힘스
-    #'077970',  # STX엔진
-    #'267250',  # HD현대마린엔진
-]
-
 ########### 특정 날짜가 네이버 금융 일일시세 어느 페이지에 있는지 탐색하는 함수 ##################
 def date_to_page(session, code, start_date_str, end_date_str):
     start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
@@ -83,6 +71,18 @@ def date_to_page(session, code, start_date_str, end_date_str):
 ############################################################################
 
 if __name__ == "__main__":
+    codes = [
+        #'042660',  # 한화오션
+        #'009540',  # HD한국조선해양
+        '010140',  # 삼성중공업
+        #'010620',  # 현대미포조선
+        #'329180',  # 현대중공업
+        #'097230',  # HJ중공업
+        #'238490',  # 현대힘스
+        #'077970',  # STX엔진
+        #'267250',  # HD현대마린엔진
+    ]
+    
     # 크롤링 날짜 설정
     target_date_str = ["2023-12-01", "2025-11-18"]
     start_date, end_date = target_date_str[0], target_date_str[1]
