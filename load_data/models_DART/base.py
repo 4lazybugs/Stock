@@ -47,10 +47,10 @@ class BaseMetric:
 
         # 1분기 보고서(1~3월 누적)
         if (m >= 1 and m <= 3):  
-            return str(y), "11012"
+            return str(y), "11013"
         # 반기 보고서(1~6월 누적)
         if (m >= 4 and m <= 6):
-            return str(y), "11013"
+            return str(y), "11012"
         # 3분기 보고서(1~9월 누적)
         if (m >= 7 and m <= 9):
             return str(y), "11014"
