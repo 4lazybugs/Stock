@@ -62,7 +62,6 @@ if __name__ == "__main__":
     rows_sh = [row(shs_metric, d) for d in dates] # datetime -> 문자열
     df_sh = pd.DataFrame(rows_sh, columns=["date", SHS.label])
     df_sh[SHS.label] = df_sh[SHS.label].ffill() # 결측치는 직전 값으로 채우기
-    df_sh = df_sh.iloc[::-1] # 날짜 오름차순 정렬
     df_sh.to_excel(f"data/{stk_code}/SHS_month.xlsx", index=False)
     # ---------------------------------------------------------------------------
 
@@ -70,7 +69,6 @@ if __name__ == "__main__":
     # ---------------------------------------------------------------------------
     rows_equ = [row(equ_metric, d) for d in dates] # datetime -> 문자열
     df_equ = pd.DataFrame(rows_equ, columns=["date", EQU.label])
-    df_equ = df_equ.iloc[::-1] # 날짜 오름차순 정렬
     df_equ.to_excel(f"data/{stk_code}/EQU_month.xlsx", index=False)
     # ----------------------------------------------------------------------------
 
@@ -98,7 +96,6 @@ if __name__ == "__main__":
 
     #df_ni = df_ni.dropna(subset=['NI_TTM']) # NI_TTM 결측치 행 제거 (자동으로 NI 결측행도 제거됨)
     df_ni['date'] = df_ni['date'].dt.strftime('%Y-%m-%d') # datetime -> 문자열
-    df_ni = df_ni.iloc[::-1] # 날짜 오름차순 정렬
     df_ni.to_excel(f"data/{stk_code}/NI_month.xlsx", index=False)
 
     print("✅ 모든 DART 데이터 저장 완료.")
