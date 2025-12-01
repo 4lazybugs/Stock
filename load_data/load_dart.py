@@ -65,8 +65,15 @@ if __name__ == "__main__":
 
     # 2) EQU
     rows_equ = [row(equ_metric, d) for d in dates]
-    df_equ = pd.DataFrame(rows_equ, columns=["date", EQU.label]) 
+    df_equ = pd.DataFrame(rows_equ, columns=["date", EQU.label])
     df_equ.to_excel(f"data/{stk_code}/EQU_month.xlsx", index=False)
+    
+    df_equ_ttm = pd.DataFrame(columns=["date", "EQU_TTM"])
+    df_equ_ttm['date'] = df_equ['date']
+    df_equ_ttm['EQU_TTM'] = df_equ['EQU'].diff() # 현재값이랑 이전 값 차이
+    df_equ_ttm = df_equ_ttm.iloc[1:] # NaN(결측)이 되는 첫 행 제거
+    df_equ_ttm['EQU_TTM'] = df_equ_ttm['EQU_TTM'].replace(0, float('nan')).ffill() # 0 -> "0이 아닌 가장 최근값"
+    df_equ_ttm.to_excel(f"data/{stk_code}/EQU_TTM_month.xlsx", index=False)
     
 
     # 3) NI
