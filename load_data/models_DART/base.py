@@ -41,7 +41,7 @@ class BaseMetric:
     def map_reprt_by_date(d: _date) -> tuple[str, str]:
         """
         날짜 → (사업연도, 보고서코드) 매핑, DART 정기공시 제출기한 기준(결산 12/31 가정)
-        11012=1분기, 11013=반기, 11014=3분기, 11011=사업보고서
+        11012=반기, 11013=1분기, 11014=3분기, 11011=사업보고서
         """
         y, m, day = d.year, d.month, d.day
 

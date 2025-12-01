@@ -6,7 +6,7 @@ df_price = pd.read_excel("data/010140/PRICE_day.xlsx")
 df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
 
 # 자기자본
-df_ni = pd.read_excel("data/010140/NI_year.xlsx") 
+df_ni = pd.read_excel("data/010140/NI_month.xlsx") 
 date_ni = pd.to_datetime(df_ni['date']) # str -> datetime
 date_ni = date_ni.dt.strftime('%Y-%m').values # series -> numpy array
 
@@ -38,7 +38,7 @@ for i in range(len(df_price)):
 
     if flag1 and flag2:
         price = df_price.loc[i, 'Close']
-        ni = df_ni.loc[idx_ni, 'NI']
+        ni = df_ni.loc[idx_ni, 'NI_TTM']
         shs = df_shs.loc[idx_shs, 'SHS']
         eps = ni/shs # calc eps
         df_eps.loc[i, 'EPS'] = eps # calc eps
