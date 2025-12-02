@@ -5,7 +5,7 @@ import numpy as np
 df_price = pd.read_excel("data/010140/PRICE_day.xlsx") 
 df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
 
-# 자기자본
+# 지배주주 순이익
 df_ni = pd.read_excel("data/010140/NI_month.xlsx") 
 date_ni = pd.to_datetime(df_ni['date']) # str -> datetime
 date_ni = date_ni.dt.strftime('%Y-%m').values # series -> numpy array

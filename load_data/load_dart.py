@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from datetime import date, timedelta
-from models_DART import SHS, EQU, NI  # ✅ BaseMetric import 필요 없음
+from models_DART import SHS, EQU, NI, AST  # ✅ BaseMetric import 필요 없음
 
 # 날짜 생성 유틸
 # ----------------------------------------------------------------------------
@@ -54,6 +54,7 @@ if __name__ == "__main__":
     shs_metric = SHS(api_key=API_KEY)
     equ_metric = EQU(api_key=API_KEY)
     ni_metric = NI(api_key=API_KEY)
+    ast_metric = AST(api_key=API_KEY)
     
     os.makedirs("data", exist_ok=True)
     
@@ -64,6 +65,14 @@ if __name__ == "__main__":
     df_sh[SHS.label] = df_sh[SHS.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
     df_sh.to_excel(f"data/{stk_code}/SHS_month.xlsx", index=False)
     # ---------------------------------------------------------------------------
+
+    # AST : 총자산 #
+    # ---------------------------------------------------------------------------
+    rows_ast = [row(ast_metric, d) for d in dates] # datetime -> 문자열
+    df_ast = pd.DataFrame(rows_ast, columns=["date", AST.label])
+    df_ast[AST.label] = df_ast[AST.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
+    df_ast.to_excel(f"data/{stk_code}/AST_month.xlsx", index=False)
+    # ----------------------------------------------------------------------------
 
     # EQUITY : 자기자본 #
     # ---------------------------------------------------------------------------
