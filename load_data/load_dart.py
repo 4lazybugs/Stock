@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # -----------------------------------------------------------------------------
     rows_sh = [row(shs_metric, d) for d in dates] # datetime -> 문자열
     df_sh = pd.DataFrame(rows_sh, columns=["date", SHS.label])
-    df_sh[SHS.label] = df_sh[SHS.label].ffill() # 결측치는 직전 값으로 채우기
+    df_sh[SHS.label] = df_sh[SHS.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
     df_sh.to_excel(f"data/{stk_code}/SHS_month.xlsx", index=False)
     # ---------------------------------------------------------------------------
 
@@ -69,6 +69,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------------------------
     rows_equ = [row(equ_metric, d) for d in dates] # datetime -> 문자열
     df_equ = pd.DataFrame(rows_equ, columns=["date", EQU.label])
+    df_equ[EQU.label] = df_equ[EQU.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
     df_equ.to_excel(f"data/{stk_code}/EQU_month.xlsx", index=False)
     # ----------------------------------------------------------------------------
 
@@ -84,7 +85,6 @@ if __name__ == "__main__":
     base_month = next((mm for mm in (1, 2, 3) if (m == mm).any()), None) # 1,2,3 중에서 실제로 존재하는 첫 번째 달 찾기
     mask = (m == base_month) if base_month is not None else pd.Series(False, index=df_ni.index)
     df_ni[NI.label] = np.where(mask, df_ni["NI_YTD"], df_ni["NI_YTD"].diff()) # 선택된 달만 NI_YTD, 나머지는 diff() 사용    
-    #df_ni[NI.label] = df_ni[NI.label].replace(0, float('nan')).ffill() # NaN -> NaN이 아닌 가장 최근값
 
     # NI_TTM(최근 4분기 합산 순이익) column 생성
     mask = df_ni[NI.label] != 0
