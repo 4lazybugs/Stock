@@ -46,10 +46,8 @@ for i in range(len(df_price)):
 
 # save to excel : eps
 df_eps['date'] = df_eps['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_eps = df_eps.iloc[::-1] # 날짜 오름차순 정렬
 df_eps.to_excel("data/010140/EPS_day.xlsx", index=False) # save to excel
 
 # save to excel : per
 df_per['date'] = df_per['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_per = df_per.iloc[::-1] # 날짜 오름차순 정렬
 df_per.to_excel("data/010140/PER_day.xlsx", index=False) # save to excel

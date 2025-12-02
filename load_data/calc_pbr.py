@@ -40,5 +40,4 @@ for i in range(len(df_price)):
         df_pbr.loc[i, 'PBR'] = price / bvps # calc PBR
 
 df_pbr['date'] = df_pbr['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_pbr = df_pbr.iloc[::-1] # 날짜 오름차순 정렬
 df_pbr.to_excel("data/010140/PBR_day.xlsx", index=False) # save to excel
