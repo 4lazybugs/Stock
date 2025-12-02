@@ -84,7 +84,7 @@ if __name__ == "__main__":
     ]
     
     # 크롤링 날짜 설정
-    target_date_str = ["2023-12-01", "2025-11-18"]
+    target_date_str = ["2023-12-01", "2025-12-01"]
     start_date, end_date = target_date_str[0], target_date_str[1]
 
     for code in codes:
@@ -98,6 +98,12 @@ if __name__ == "__main__":
 
         # 실제 크롤링
         data_rows = date_to_page(session, code, start_date, end_date)
+
+        # 날짜 오름차순 정렬 (과거 → 최신)
+        data_rows = sorted(
+            data_rows,
+            key=lambda x: datetime.strptime(x[0], "%Y.%m.%d")
+        )
 
         # 엑셀에 쓰기
         for trade_date, close, open_, high, low, volume in data_rows:
