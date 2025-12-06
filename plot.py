@@ -1,8 +1,14 @@
 import matplotlib.pyplot as plt
+import mplcursors
 import numpy as np
 import pandas as pd
 
-def plot_data(file_path, freq='day', value_col=None, start=None, end=None, step=1):
+def plot_data(file_path, freq='day', value_col=None, 
+              start=None, end=None, step=1, ax=None, 
+              normalize=True, label=None):
+    if ax is None:
+        ax = plt.gca()
+
     # 1) Load data
     df = pd.read_excel(file_path)
     df['date'] = pd.to_datetime(df['date'])
@@ -37,15 +43,62 @@ def plot_data(file_path, freq='day', value_col=None, start=None, end=None, step=
     x = df_processed.index
     y = df_processed[value_col]
 
-    plt.plot(x, y)
-    plt.xlabel(freq)
-    plt.xticks(x[::step], rotation=45, fontsize=10, fontstyle='italic')
-    plt.ylabel(value_col)
-    plt.title(f'<{value_col} over {freq}>', fontsize=20)
+    if label is None:
+        label = value_col
+
+    if normalize:
+        y_min = y.min()
+        y_max = y.max()
+        y_norm = (y - y_min) / (y_max - y_min)   # 0~1 스케일
+
+        ax.plot(x, y_norm, label=label)
+
+        # y축 눈금: 위치는 정규화 기준, 라벨은 원래 값
+        yticks_orig = np.linspace(y_min, y_max, 5)  # 원래 값 기준 5개 눈금
+        yticks_pos = (yticks_orig - y_min) / (y_max - y_min)
+
+        ax.set_yticks(yticks_pos)
+        ax.set_yticklabels([f"{v:.2f}" for v in yticks_orig], fontsize=13, fontstyle='italic')
+    
+    else:
+        ax.plot(x, y, label=label)
+
+    ax.set_ylabel(value_col, fontsize=15)
+    ax.set_xlabel(freq)
+    ax.set_xticks(x[::step])
+    ax.set_xticklabels(x[::step], rotation=45, fontsize=10, fontstyle='italic')
+
+
+if __name__ == "__main__":
+    start, end = '2000-01-01', '2025-12-07'
+    step = 100
+
+    fig, ax_left = plt.subplots(figsize=(12, 5))
+    ax_right = ax_left.twinx()   # 오른쪽 y축 하나 생성
+
+    fpth = 'data/EXCHANGE_day.xlsx'
+    plot_data(fpth, freq='day', value_col='EXCHANGE',
+            start=start, end=end,
+            step=step, ax=ax_left, label='EXCHANGE[₩/$]')
+    ax_left.set_ylabel('EXCHANGE')
+    #plt.show()
+
+    fpth = 'data/MARKET_INTEREST_day.xlsx'
+    plot_data(fpth, freq='day', value_col='MARKET_INTEREST',
+            start=start, end=end,
+            step=step, ax=ax_right, label='MARKET_INTEREST[%]')
+    
+    ax_left.set_title('<EXCHANGE_RATE and MARKET_INTEREST>', fontsize=20)
+
+    # 왼쪽/오른쪽 축에서 handle & label 합치기
+    lines_left, labels_left = ax_left.get_legend_handles_labels()
+    line_left = ax_left.get_lines()[0].set_color("C0")
+    lines_right, labels_right = ax_right.get_legend_handles_labels()
+    line_right = ax_right.get_lines()[0].set_color("C1")
+    
+    ax_left.legend(
+        lines_left + lines_right, labels_left + labels_right,
+        loc='lower left', fontsize=15
+    )
+
     plt.show()
-
-    return df_processed
-
-fpth = 'data/ECOS_day.xlsx'
-plot_data(fpth, freq='day', value_col='exchange_rate',
-          start='2025-01-01', end='2025-12-07', step=5)

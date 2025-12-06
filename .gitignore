@@ -1,5 +1,6 @@
 __pycache__/
 *.xlsx
+load_data/debug.py
 stock_key
 stock_key.pub
 *.pdf
