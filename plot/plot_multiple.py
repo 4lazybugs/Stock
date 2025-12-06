@@ -11,10 +11,11 @@ def plot_data(file_path, freq='day', value_col=None,
 
     # 1) Load data
     df = pd.read_excel(file_path)
-    df['date'] = pd.to_datetime(df['date'])
+    df['date'] = df['date'].astype(str)
     
     # 2) Process data by frequency
     if freq == 'year':
+        df['date'] = pd.to_datetime(df['date'], format='%Y')
         df_processed = (
             df.sort_values('date')
               .groupby(df['date'].dt.year)
@@ -24,6 +25,7 @@ def plot_data(file_path, freq='day', value_col=None,
         df_processed.index = df_processed.index.astype(str)
 
     elif freq == 'month':
+        df['date'] = pd.to_datetime(df['date'])
         df_processed = (
             df.sort_values('date')
               .groupby(df['date'].dt.to_period('M'))
@@ -33,6 +35,7 @@ def plot_data(file_path, freq='day', value_col=None,
         df_processed.index.name = 'month'
 
     elif freq == 'day':
+        df['date'] = pd.to_datetime(df['date'])
         df_processed = df.set_index('date')
         df_processed.index = df_processed.index.astype(str)
 
@@ -43,27 +46,23 @@ def plot_data(file_path, freq='day', value_col=None,
     x = df_processed.index
     y = df_processed[value_col]
 
-    if label is None:
-        label = value_col
-
+    # plot_data 함수 내부 수정: ax.plot에 label 인수를 추가합니다.
     if normalize:
         y_min = y.min()
         y_max = y.max()
         y_norm = (y - y_min) / (y_max - y_min)   # 0~1 스케일
 
-        ax.plot(x, y_norm, label=label)
+        # ⭐ 수정 1: label=label 추가
+        ax.plot(x, y_norm, label=label) 
 
-        # y축 눈금: 위치는 정규화 기준, 라벨은 원래 값
-        yticks_orig = np.linspace(y_min, y_max, 5)  # 원래 값 기준 5개 눈금
-        yticks_pos = (yticks_orig - y_min) / (y_max - y_min)
-
-        ax.set_yticks(yticks_pos)
-        ax.set_yticklabels([f"{v:.2f}" for v in yticks_orig], fontsize=13, fontstyle='italic')
+        # y축 눈금은 모두 정규화된 0~1 스케일을 공유하므로 주석 처리된 상태로 둡니다.
+        # ax.set_yticks(yticks_pos)
+        # ax.set_yticklabels([f"{v:.2f}" for v in yticks_orig], fontsize=13, fontstyle='italic')
     
     else:
+        # ⭐ 수정 1: label=label 추가
         ax.plot(x, y, label=label)
 
-    ax.set_ylabel(value_col, fontsize=15)
     ax.set_xlabel(freq)
     ax.set_xticks(x[::step])
     ax.set_xticklabels(x[::step], rotation=45, fontsize=10, fontstyle='italic')
@@ -75,18 +74,32 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots(figsize=(12, 5))
 
-    fpth = 'data/EXCHANGE_day.xlsx'
-    plot_data(fpth, freq='day', value_col='EXCHANGE',
-            start=start, end=end,
-            step=step, ax=ax, label='EXCHANGE[₩/$]')
-    ax.set_ylabel('EXCHANGE')
+    # ⭐ 수정 2: GDP의 freq를 'year'에서 'day'로 변경하여 X축 스케일 통일
+    fpth = 'data/GDP.xlsx'
+    plot_data(fpth, freq='day', value_col='GDP',
+               start=start, end=end,
+               step=step, ax=ax, label='GDP')
 
-    fpth = 'data/MARKET_INTEREST_day.xlsx'
+    fpth = 'data/EXCHANGE.xlsx'
+    plot_data(fpth, freq='day', value_col='EXCHANGE',
+               start=start, end=end,
+               step=step, ax=ax, label='EXCHANGE[₩/$]')
+
+    fpth = 'data/MARKET_INTEREST.xlsx'
     plot_data(fpth, freq='day', value_col='MARKET_INTEREST',
-            start=start, end=end,
-            step=step, ax=ax, label='MARKET_INTEREST[%]')
+               start=start, end=end,
+               step=step, ax=ax, label='MARKET_INTEREST[%]')
     
-    ax.set_title('<EXCHANGE_RATE and MARKET_INTEREST>', fontsize=20)
+    # Y축 레이블 추가 (모두 0~1로 정규화되었음을 명시)
+    ax.set_ylabel('Normalized Value (0 to 1)', fontsize=15) 
+
+    ax.set_title('market interest & exchange & GDP', fontsize=20)
+    
+    # ⭐ 수정 3: 수동 범례 대신 ax.legend()를 사용하여 플롯된 라인의 레이블을 자동으로 가져옵니다.
+    # plot_data에서 label 인수를 넘겼으므로 이제 자동으로 범례를 만들 수 있습니다.
+    ax.legend(fontsize=15) 
+
+    mplcursors.cursor(hover=True)
 
     plt.show()
-    plt.savefig(f'plot/EXCHANGE_RATE and MARKET_INTEREST.png', dpi=600)
+    plt.savefig(f'plot/multiple.png', dpi=600)

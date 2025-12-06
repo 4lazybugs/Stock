@@ -11,10 +11,11 @@ def plot_data(file_path, freq='day', value_col=None,
 
     # 1) Load data
     df = pd.read_excel(file_path)
-    df['date'] = pd.to_datetime(df['date'])
+    df['date'] = df['date'].astype(str)
     
     # 2) Process data by frequency
     if freq == 'year':
+        df['date'] = pd.to_datetime(df['date'], format='%Y')
         df_processed = (
             df.sort_values('date')
               .groupby(df['date'].dt.year)
@@ -24,6 +25,7 @@ def plot_data(file_path, freq='day', value_col=None,
         df_processed.index = df_processed.index.astype(str)
 
     elif freq == 'month':
+        df['date'] = pd.to_datetime(df['date'])
         df_processed = (
             df.sort_values('date')
               .groupby(df['date'].dt.to_period('M'))
@@ -33,6 +35,7 @@ def plot_data(file_path, freq='day', value_col=None,
         df_processed.index.name = 'month'
 
     elif freq == 'day':
+        df['date'] = pd.to_datetime(df['date'])
         df_processed = df.set_index('date')
         df_processed.index = df_processed.index.astype(str)
 
@@ -75,8 +78,8 @@ if __name__ == "__main__":
     fig, ax_left = plt.subplots(figsize=(12, 5))
     ax_right = ax_left.twinx()   # 오른쪽 y축 하나 생성
 
-    fpth = 'data/EXCHANGE_day.xlsx'
-    plot_data(fpth, freq='day', value_col='EXCHANGE',
+    fpth = 'data/EXCHANGE.xlsx'
+    plot_data(fpth, freq='day', value_col=f'EXCHANGE',
             start=start, end=end,
             step=step, ax=ax_left, label='EXCHANGE[₩/$]')
     ax_left.set_ylabel('EXCHANGE', fontsize=15)
