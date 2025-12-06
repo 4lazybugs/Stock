@@ -83,4 +83,4 @@ if __name__ == "__main__":
     ax.set_ylabel(f'{metric}')
 
     plt.show()
-    plt.savefig('{metric}_day.png', dpi=600)
+    plt.savefig(f'plot/{metric}_day.png', dpi=600)

@@ -89,4 +89,4 @@ if __name__ == "__main__":
     ax.set_title('<EXCHANGE_RATE and MARKET_INTEREST>', fontsize=20)
 
     plt.show()
-    plt.savefig('EXCHANGE_RATE and MARKET_INTEREST.png', dpi=600)
+    plt.savefig(f'plot/EXCHANGE_RATE and MARKET_INTEREST.png', dpi=600)

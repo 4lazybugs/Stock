@@ -101,4 +101,4 @@ if __name__ == "__main__":
     )
 
     plt.show()
-    plt.savefig('EXCHANGE_RATE and KOSPI.png', dpi=600)
+    plt.savefig(f'plot/EXCHANGE_RATE and KOSPI.png', dpi=600)
