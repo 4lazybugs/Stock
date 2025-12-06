@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     fpth = 'data/KOSPI/PRICE_day.xlsx'
     #fpth = 'data/MARKET_INTEREST_day.xlsx'
-    plot_data(fpth, freq='day', value_col='Close',
+    plot_data(fpth, freq='day', value_col='KOSPI',
             start=start, end=end,
             step=step, ax=ax_right, label='KOSPI')
     ax_right.set_ylabel('KOSPI', fontsize=15)
@@ -104,4 +104,4 @@ if __name__ == "__main__":
     )
 
     plt.show()
-    plt.savefig(f'plot/EXCHANGE_RATE and KOSPI.png', dpi=600)
+    plt.savefig(f'plot/EXCHANGE_RATE and KOSPI.png', dpi=300)
