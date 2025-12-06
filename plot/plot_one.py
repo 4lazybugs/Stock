@@ -63,42 +63,24 @@ def plot_data(file_path, freq='day', value_col=None,
     else:
         ax.plot(x, y, label=label)
 
+    ax.set_ylabel(value_col, fontsize=15)
     ax.set_xlabel(freq)
     ax.set_xticks(x[::step])
     ax.set_xticklabels(x[::step], rotation=45, fontsize=10, fontstyle='italic')
 
 
 if __name__ == "__main__":
-    start, end = '2023-12-01', '2025-12-07'
-    step = 100
+    start, end = '2000-01-01', '2025-12-07'
+    step = 10
 
-    fig, ax_left = plt.subplots(figsize=(12, 5))
-    ax_right = ax_left.twinx()   # 오른쪽 y축 하나 생성
+    fig, ax = plt.subplots(figsize=(12, 5))
 
-    fpth = 'data/EXCHANGE_day.xlsx'
-    plot_data(fpth, freq='day', value_col='EXCHANGE',
-            start=start, end=end,
-            step=step, ax=ax_left, label='EXCHANGE[₩/$]')
-    ax_left.set_ylabel('EXCHANGE', fontsize=15)
-    ax_left.set_title('<EXCHANGE_RATE and KOSPI>', fontsize=20)
-
-    fpth = 'data/KOSPI/PRICE_day.xlsx'
-    #fpth = 'data/MARKET_INTEREST_day.xlsx'
-    plot_data(fpth, freq='day', value_col='Close',
-            start=start, end=end,
-            step=step, ax=ax_right, label='KOSPI')
-    ax_right.set_ylabel('KOSPI', fontsize=15)
-
-    # 왼쪽/오른쪽 축에서 handle & label 합치기
-    lines_left, labels_left = ax_left.get_legend_handles_labels()
-    line_left = ax_left.get_lines()[0].set_color("C0")
-    lines_right, labels_right = ax_right.get_legend_handles_labels()
-    line_right = ax_right.get_lines()[0].set_color("C1")
-    
-    ax_left.legend(
-        lines_left + lines_right, labels_left + labels_right,
-        loc='lower left', fontsize=15
-    )
+    metric = 'PER'
+    fpth = f'data/010140/{metric}_day.xlsx'
+    plot_data(fpth, freq='month', value_col=f'{metric}',
+            start=start, end=end, normalize=False,
+            step=step, ax=ax, label=f'{metric}')
+    ax.set_ylabel(f'{metric}')
 
     plt.show()
-    plt.savefig('data/exchange_market_interest.png', dpi=600)
+    plt.savefig('{metric}_day.png', dpi=600)
