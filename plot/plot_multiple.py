@@ -101,5 +101,6 @@ if __name__ == "__main__":
 
     mplcursors.cursor(hover=True)
 
+    plt.tight_layout()
     plt.savefig(f'plot/EXCHANGE_RATE and KOSPI.png', dpi=600)
     plt.show()

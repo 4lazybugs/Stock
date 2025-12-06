@@ -103,6 +103,7 @@ if __name__ == "__main__":
         loc='lower left', fontsize=15
     )
 
+    plt.tight_layout()
     plt.savefig(f'plot/EXCHANGE_RATE and KOSPI.png', dpi=600)
     plt.show()
     
