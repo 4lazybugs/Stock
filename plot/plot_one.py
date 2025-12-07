@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots(figsize=(12, 5))
 
-    metric = 'PER'
+    metric = 'ROE'
     fpth = f'data/010140/{metric}_day.xlsx'
 
     plot_data(fpth, freq='month', value_col=metric,

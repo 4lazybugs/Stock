@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     # ⭐ 수정 2: GDP의 freq를 'year'에서 'day'로 변경하여 X축 스케일 통일
     fpth = 'data/GDP.xlsx'
-    plot_data(fpth, freq='day', value_col='GDP',
+    plot_data(fpth, freq='year', value_col='GDP',
                start=start, end=end,
                step=step, ax=ax, label='GDP')
 

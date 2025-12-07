@@ -1,7 +1,9 @@
 ## load_ecos.py
-거시 경제 지표 : 환율, 시장금리, ..
+거시 경제 지표 : 환율, 시장금리, GDP..
+https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS003&apiId=2022001
 
 ## load_dart.py
 기업별 분석 지표 : per, pbr
-
+https://ecos.bok.or.kr/api/#/DevGuide/StatisticalCodeSearch
+ch
 ## load_price.py
