@@ -72,25 +72,33 @@ def plot_data(file_path, freq='day', value_col=None,
 
 
 if __name__ == "__main__":
-    start, end = '2023-12-01', '2025-12-07'
-    step = 30
+    start, end = '2017-12-01', '2025-12-07'
+    step = 10
 
     fig, ax_left = plt.subplots(figsize=(12, 5))
     ax_right = ax_left.twinx()   # 오른쪽 y축 하나 생성
 
-    fpth = 'data/EXCHANGE.xlsx'
-    plot_data(fpth, freq='day', value_col=f'EXCHANGE',
+    '''
+    fpth = 'data/000660/PER_day.xlsx'
+    plot_data(fpth, freq='month', value_col=f'PER',
             start=start, end=end,
-            step=step, ax=ax_left, label='EXCHANGE[₩/$]')
-    ax_left.set_ylabel('EXCHANGE', fontsize=15)
-    ax_left.set_title('<EXCHANGE_RATE and KOSPI>', fontsize=20)
+            step=step, ax=ax_left, label='PER')
+    ax_left.set_ylabel('PER', fontsize=15)
+    ax_left.set_title('<PER & PBR>', fontsize=20)
+    '''
 
-    fpth = 'data/KOSPI/PRICE_day.xlsx'
-    #fpth = 'data/MARKET_INTEREST_day.xlsx'
-    plot_data(fpth, freq='day', value_col='KOSPI',
+    fpth = 'data/000660/PRICE_day.xlsx'
+    plot_data(fpth, freq='month', value_col=f'Close',
             start=start, end=end,
-            step=step, ax=ax_right, label='KOSPI')
-    ax_right.set_ylabel('KOSPI', fontsize=15)
+            step=step, ax=ax_left, label='Close')
+    ax_left.set_ylabel('SK HY', fontsize=15)
+    ax_left.set_title('<PBR & SK>', fontsize=20)
+
+    fpth = 'data/000660/PBR_day.xlsx'
+    plot_data(fpth, freq='month', value_col=f'PBR',
+            start=start, end=end,
+            step=step, ax=ax_right, label='PBR')
+    ax_right.set_ylabel('PBR', fontsize=15)
 
     # 왼쪽/오른쪽 축에서 handle & label 합치기
     lines_left, labels_left = ax_left.get_legend_handles_labels()
@@ -104,6 +112,32 @@ if __name__ == "__main__":
     )
 
     plt.tight_layout()
-    plt.savefig(f'plot/EXCHANGE_RATE and KOSPI.png', dpi=600)
+    plt.savefig(f'plot/CPI and MARKET_INTEREST.png', dpi=600)
     plt.show()
-    
+
+    '''
+    fpth = 'data/CPI.xlsx'
+    plot_data(fpth, freq='month', value_col=f'CPI',
+            start=start, end=end,
+            step=step, ax=ax_left, label='CPI')
+    ax_left.set_ylabel('CPI', fontsize=15)
+    ax_left.set_title('<CPI % Market Interest>', fontsize=20)
+    '''
+
+    '''
+    fpth = 'data/EXCHANGE.xlsx'
+    plot_data(fpth, freq='day', value_col=f'EXCHANGE',
+            start=start, end=end,
+            step=step, ax=ax_left, label='EXCHANGE[₩/$]')
+    ax_left.set_ylabel('EXCHANGE', fontsize=15)
+    ax_left.set_title('<EXCHANGE_RATE and KOSPI>', fontsize=20)
+    '''
+
+    '''
+    fpth = 'data/MARKET_INTEREST.xlsx'
+    #fpth = 'data/MARKET_INTEREST_day.xlsx'
+    plot_data(fpth, freq='month', value_col='MARKET_INTEREST',
+            start=start, end=end,
+            step=step, ax=ax_right, label='MARKET_INTEREST')
+    ax_right.set_ylabel('MARKET_INTEREST', fontsize=15)
+    '''

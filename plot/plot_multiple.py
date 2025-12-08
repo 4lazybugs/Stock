@@ -74,6 +74,7 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots(figsize=(12, 5))
 
+    '''
     # ⭐ 수정 2: GDP의 freq를 'year'에서 'day'로 변경하여 X축 스케일 통일
     fpth = 'data/GDP.xlsx'
     plot_data(fpth, freq='year', value_col='GDP',
@@ -89,9 +90,10 @@ if __name__ == "__main__":
     plot_data(fpth, freq='day', value_col='MARKET_INTEREST',
                start=start, end=end,
                step=step, ax=ax, label='MARKET_INTEREST[%]')
+    '''
     
     # Y축 레이블 추가 (모두 0~1로 정규화되었음을 명시)
-    ax.set_ylabel('Normalized Value (0 to 1)', fontsize=15) 
+    ax.set_ylabel('[Normalized Value] (0 to 1)', fontsize=15) 
 
     ax.set_title('market interest & exchange & GDP', fontsize=20)
     

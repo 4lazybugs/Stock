@@ -81,13 +81,13 @@ def plot_data(file_path, freq='day', value_col=None,
 
 if __name__ == "__main__":
     # 연도 데이터니까 이렇게 쓰는 게 자연스러움
-    start, end = '2000-01-01', '2025-12-31'
-    step = 1
+    start, end = '2000-01-01', '2025-12-02'
+    step = 5
 
     fig, ax = plt.subplots(figsize=(12, 5))
 
-    metric = 'ROE'
-    fpth = f'data/010140/{metric}_day.xlsx'
+    metric = '~EMPLOY'
+    fpth = f'data/{metric}.xlsx'
 
     plot_data(fpth, freq='month', value_col=metric,
               start=start,end=end,
@@ -97,6 +97,7 @@ if __name__ == "__main__":
     ax.set_ylabel(metric)
 
     # 먼저 저장, 그 다음 보여주기 (취향 따라 순서 바꿔도 큰 문제는 없음)
+    plt.title(f'{metric} over Time', fontsize=16)
     plt.tight_layout()
     plt.savefig(f'plot/{metric}.png', dpi=600)
     plt.show()

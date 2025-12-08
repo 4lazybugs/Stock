@@ -2,16 +2,16 @@ import pandas as pd
 import numpy as np
 
 # 주가
-df_price = pd.read_excel("data/010140/PRICE_day.xlsx") 
+df_price = pd.read_excel("data/000660/PRICE_day.xlsx") 
 df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
 
 # 지배주주 순이익
-df_ni = pd.read_excel("data/010140/NI_month.xlsx") 
+df_ni = pd.read_excel("data/000660/NI_month.xlsx") 
 date_ni = pd.to_datetime(df_ni['date']) # str -> datetime
 date_ni = date_ni.dt.strftime('%Y-%m').values # series -> numpy array
 
 # 총자산
-df_ast = pd.read_excel("data/010140/AST_month.xlsx")
+df_ast = pd.read_excel("data/000660/AST_month.xlsx")
 date_ast = pd.to_datetime(df_ast['date']) # str -> datetime
 date_ast = date_ast.dt.strftime('%Y-%m').values # series -> numpy array
 
@@ -41,4 +41,4 @@ for i in range(len(df_price)):
 
 # save to excel : roa
 df_roa['date'] = df_roa['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_roa.to_excel("data/010140/ROA_day.xlsx", index=False) # save to excel
+df_roa.to_excel("data/000660/ROA_day.xlsx", index=False) # save to excel

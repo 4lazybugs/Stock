@@ -1,9 +1,11 @@
 ## load_ecos.py
-거시 경제 지표 : 환율, 시장금리, GDP..
+거시 경제 지표 : 환율, 시장금리, GDP, CPI(물가지수)->인플레인션율, 물가지수추가:집값 상승(인플레이션의 습격 추천 책)
 https://ecos.bok.or.kr/api/#/DevGuide/StatisticalCodeSearch
+https://ecos.bok.or.kr/api/#/DevGuide/DevSpeciflcation
 
 ## load_dart.py
 기업별 분석 지표 : per, pbr
 https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS003&apiId=2022001
-ch
+
+
 ## load_price.py
