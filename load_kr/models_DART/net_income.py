@@ -11,8 +11,6 @@ class NI(BaseMetric):
             return None
 
         rows = (data.get("list") or [])
-        # IS/CIS만 사용
-        rows = [it for it in rows if (it.get("sj_div") in ("IS", "CIS", "SCE"))]
 
         def norm(s: str) -> str:
             return "".join((s or "").split()).lower()
