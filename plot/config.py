@@ -3,7 +3,7 @@ import yaml
 import os
 
 ############ load config.yaml ########################
-def load_yaml(path='config.yaml'):
+def load_yaml(path='plot/config.yaml'):
     with open(path, 'r', encoding='utf-8') as f:
         raw_config = yaml.safe_load(f)
 

@@ -4,6 +4,7 @@ from openpyxl import Workbook
 import time
 from datetime import datetime
 import os
+from utils import get_config
 
 headers = {
 "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -102,9 +103,8 @@ if __name__ == "__main__":
         #'267250',  # HD현대마린엔진
     ]
     
-    # 크롤링 날짜 설정
-    target_date_str = ["2023-12-01", "2025-12-07"]
-    start_date, end_date = target_date_str[0], target_date_str[1]
+    config = get_config()
+    start_date, end_date = config.date['start'], config.date['end']
 
     for code in codes:
         print(f"\n📈 크롤링 시작: {code}")

@@ -124,3 +124,17 @@ if __name__ == "__main__":
     plt.title(f'EXCHANGE over day', fontsize=16)
     plt.savefig(f'plot/EXCHANGE.png', dpi=600)
     plt.show()
+
+    ####### KOSPI #######
+    fig, ax = plt.subplots(figsize=(12, 5))
+    fpth = f'data/KOSPI/PRICE_day.xlsx'
+    plot_data(fpth, freq='day', value_col="KOSPI",
+              start=start,end=end,
+              normalize=False,step=1,
+              ax=ax, label="KOSPI"
+    )
+    ax.set_ylabel("KOSPI")
+    plt.tight_layout()
+    plt.title(f'KOSPI over day', fontsize=16)
+    plt.savefig(f'plot/KOSPI.png', dpi=600)
+    plt.show()
