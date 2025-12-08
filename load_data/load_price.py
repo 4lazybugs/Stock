@@ -4,6 +4,7 @@ from openpyxl import Workbook
 import time
 from datetime import datetime
 import os
+from utils import get_config, fetch_corp_codes
 
 headers = {
 "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -71,53 +72,49 @@ def date_to_page(session, code, start_date_str, end_date_str):
 ############################################################################
 
 if __name__ == "__main__":
-    codes = [
-        #'042660',  # 한화오션
-        #'009540',  # HD한국조선해양
-        '010140',  # 삼성중공업
-        #'010620',  # 현대미포조선
-        #'329180',  # 현대중공업
-        #'097230',  # HJ중공업
-        #'238490',  # 현대힘스
-        #'077970',  # STX엔진
-        #'267250',  # HD현대마린엔진
-    ]
-    
-    # 크롤링 날짜 설정
-    target_date_str = ["2023-12-01", "2025-12-01"]
-    start_date, end_date = target_date_str[0], target_date_str[1]
+    api_key = os.getenv("DART_API_KEY")
+    config = get_config()
 
-    for code in codes:
-        print(f"\n📈 크롤링 시작: {code}")
+    for target_corp_name in config.target_corp_names:
+        try:
+            corp_name, corp_code, stk_code = fetch_corp_codes(target_corp_name, api_key)
+            start_date = config.date['start']
+            end_date = config.date['end']
+            #breakpoint()
+            print(f"\n📈 크롤링 시작: {corp_name}")
 
-        # 엑셀 워크북/시트 생성
-        wb = Workbook()
-        ws = wb.active
-        ws.title = code
-        ws.append(["date", "Close", "Open", "High", "Low", "Volume"])
+            # 엑셀 워크북/시트 생성
+            wb = Workbook()
+            ws = wb.active
+            ws.title = corp_name
+            ws.append(["date", "Close", "Open", "High", "Low", "Volume"])
 
-        data_rows = date_to_page(session, code, start_date, end_date)
+            data_rows = date_to_page(session, stk_code, start_date, end_date)
 
-        # 날짜 오름차순 정렬 (과거 → 최신)
-        data_rows = sorted(
-            data_rows,
-            key=lambda x: datetime.strptime(x[0], "%Y.%m.%d")
-        )
+            # 날짜 오름차순 정렬 (과거 → 최신)
+            data_rows = sorted(
+                data_rows,
+                key=lambda x: datetime.strptime(x[0], "%Y.%m.%d")
+            )
 
-        # 엑셀에 쓰기
-        for trade_date, close, open_, high, low, volume in data_rows:
-            ws.append([
-                trade_date,
-                int(close.replace(",", "")),
-                int(open_.replace(",", "")),
-                int(high.replace(",", "")),
-                int(low.replace(",", "")),
-                int(volume.replace(",", "")) if volume != "" else 0,
-            ])
+            # 엑셀에 쓰기
+            for trade_date, close, open_, high, low, volume in data_rows:
+                ws.append([
+                    trade_date,
+                    int(close.replace(",", "")),
+                    int(open_.replace(",", "")),
+                    int(high.replace(",", "")),
+                    int(low.replace(",", "")),
+                    int(volume.replace(",", "")) if volume != "" else 0,
+                ])
 
-        # ✅ 종목별로 개별 파일 저장
-        save_dir = f"data/{code}"
-        os.makedirs(save_dir, exist_ok=True)
-        save_path = os.path.join(save_dir, "PRICE_day.xlsx")
-        wb.save(save_path)
-        print(f"✅ 저장 완료: {save_path}")
+            # ✅ 종목별로 개별 파일 저장
+            save_dir = f"data/{corp_name}_{stk_code}"
+            os.makedirs(save_dir, exist_ok=True)
+            save_path = os.path.join(save_dir, "PRICE_day.xlsx")
+            wb.save(save_path)
+            print(f"✅ 저장 완료: {save_path}")
+        
+        except Exception as e:
+            print(f"⚠️ {target_corp_name} 처리 중 오류 발생 → 건너뜀: {e}")
+            continue

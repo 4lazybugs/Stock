@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from datetime import date, timedelta
 from models_DART import SHS, EQU, NI, AST  # ✅ BaseMetric import 필요 없음
+from utils import get_config, load_yaml, fetch_corp_codes
 
 # 날짜 생성 유틸
 # ----------------------------------------------------------------------------
@@ -45,66 +46,69 @@ def row(metric, d: date):
 
 
 if __name__ == "__main__":    
-    API_KEY = "3957b81997e850b1a08e448a63e193dd0f630a25"
-    stk_code, corp_code = "010140", "00126478"  # 삼성중공업 예시
-    target_date_str = ["2016-01-01", "2025-12-01"]
-    start_date, end_date = target_date_str[0], target_date_str[1]
-    dates = generate_dates(start_date, end_date, mode="month")
+    api_key = os.getenv("DART_API_KEY")
+    config = get_config()
 
-    shs_metric = SHS(api_key=API_KEY)
-    equ_metric = EQU(api_key=API_KEY)
-    ni_metric = NI(api_key=API_KEY)
-    ast_metric = AST(api_key=API_KEY)
-    
-    os.makedirs("data", exist_ok=True)
-    
-    # SHS : 발행주식수 #
-    # -----------------------------------------------------------------------------
-    rows_sh = [row(shs_metric, d) for d in dates] # datetime -> 문자열
-    df_sh = pd.DataFrame(rows_sh, columns=["date", SHS.label])
-    df_sh[SHS.label] = df_sh[SHS.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
-    df_sh.to_excel(f"data/{stk_code}/SHS_month.xlsx", index=False)
-    # ---------------------------------------------------------------------------
+    for target_corp_name in config.target_corp_names:
+        corp_name, corp_code, stk_code = fetch_corp_codes(target_corp_name, api_key)
+        start_date = config.date['start']
+        end_date = config.date['end']
+        dates = generate_dates(start_date, end_date, mode="month")
 
-    # AST : 총자산 #
-    # ---------------------------------------------------------------------------
-    rows_ast = [row(ast_metric, d) for d in dates] # datetime -> 문자열
-    df_ast = pd.DataFrame(rows_ast, columns=["date", AST.label])
-    df_ast[AST.label] = df_ast[AST.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
-    df_ast.to_excel(f"data/{stk_code}/AST_month.xlsx", index=False)
-    # ----------------------------------------------------------------------------
+        shs_metric = SHS(api_key=api_key)
+        equ_metric = EQU(api_key=api_key)
+        ni_metric = NI(api_key=api_key)
+        ast_metric = AST(api_key=api_key)
+        
+        base_dir = f"data/{corp_name}_{stk_code}"
+        os.makedirs(base_dir, exist_ok=True)
+        
+        # SHS : 발행주식수 #
+        # -----------------------------------------------------------------------------
+        rows_sh = [row(shs_metric, d) for d in dates] # datetime -> 문자열
+        df_sh = pd.DataFrame(rows_sh, columns=["date", SHS.label])
+        df_sh[SHS.label] = df_sh[SHS.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
+        df_sh.to_excel(os.path.join(base_dir, "SHS_month.xlsx"), index=False)
+        # ---------------------------------------------------------------------------
 
-    # EQUITY : 자기자본 #
-    # ---------------------------------------------------------------------------
-    rows_equ = [row(equ_metric, d) for d in dates] # datetime -> 문자열
-    df_equ = pd.DataFrame(rows_equ, columns=["date", EQU.label])
-    df_equ[EQU.label] = df_equ[EQU.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
-    df_equ.to_excel(f"data/{stk_code}/EQU_month.xlsx", index=False)
-    # ----------------------------------------------------------------------------
+        # AST : 총자산 #
+        # ---------------------------------------------------------------------------
+        rows_ast = [row(ast_metric, d) for d in dates] # datetime -> 문자열
+        df_ast = pd.DataFrame(rows_ast, columns=["date", AST.label])
+        df_ast[AST.label] = df_ast[AST.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
+        df_ast.to_excel(os.path.join(base_dir, "AST_month.xlsx"), index=False)
+        # ----------------------------------------------------------------------------
 
-    # NI : 순이익 #
-    # -----------------------------------------------------------------------------------------------------------------
-    # NI YTD(분기누적순이익) column 생성
-    rows_ni = [row(ni_metric, d) for d in dates] # datetime -> 문자열
-    df_ni = pd.DataFrame(rows_ni, columns=["date", "NI_YTD"])
-    df_ni['date'] = pd.to_datetime(df_ni['date'])
+        # EQUITY : 자기자본 #
+        # ---------------------------------------------------------------------------
+        rows_equ = [row(equ_metric, d) for d in dates] # datetime -> 문자열
+        df_equ = pd.DataFrame(rows_equ, columns=["date", EQU.label])
+        df_equ[EQU.label] = df_equ[EQU.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
+        df_equ.to_excel(os.path.join(base_dir, "EQU_month.xlsx"), index=False)
+        # ----------------------------------------------------------------------------
 
-    # NI(분기순이익) column 생성
-    m = df_ni['date'].dt.month
-    base_month = next((mm for mm in (1, 2, 3) if (m == mm).any()), None) # 1,2,3 중에서 실제로 존재하는 첫 번째 달 찾기
-    mask = (m == base_month) if base_month is not None else pd.Series(False, index=df_ni.index)
-    df_ni[NI.label] = np.where(mask, df_ni["NI_YTD"], df_ni["NI_YTD"].diff()) # 선택된 달만 NI_YTD, 나머지는 diff() 사용    
+        # NI : 순이익 #
+        # -----------------------------------------------------------------------------------------------------------------
+        # NI YTD(분기누적순이익) column 생성
+        rows_ni = [row(ni_metric, d) for d in dates] # datetime -> 문자열
+        df_ni = pd.DataFrame(rows_ni, columns=["date", "NI_YTD"])
+        df_ni['date'] = pd.to_datetime(df_ni['date'])
 
-    # NI_TTM(최근 4분기 합산 순이익) column 생성
-    mask = df_ni[NI.label] != 0
-    ni_nonzero = df_ni.loc[mask, NI.label]
-    ni_ttm_nonzero = ni_nonzero.rolling(window=4, min_periods=4).sum() # 0이 아닌 값들만 따로 꺼내 rolling TTM 계산
-    df_ni.loc[mask, 'NI_TTM'] = ni_ttm_nonzero.values # 원래 df_ni에 NI_TTM 컬럼 만들고, 0이 아닌 곳에만 값 채우기
-    df_ni['NI_TTM'] = df_ni['NI_TTM'].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
-    # ------------------------------------------------------------------------------------------------------------------
+        # NI(분기순이익) column 생성
+        m = df_ni['date'].dt.month
+        base_month = next((mm for mm in (1, 2, 3) if (m == mm).any()), None) # 1,2,3 중에서 실제로 존재하는 첫 번째 달 찾기
+        mask = (m == base_month) if base_month is not None else pd.Series(False, index=df_ni.index)
+        df_ni[NI.label] = np.where(mask, df_ni["NI_YTD"], df_ni["NI_YTD"].diff()) # 선택된 달만 NI_YTD, 나머지는 diff() 사용    
 
-    #df_ni = df_ni.dropna(subset=['NI_TTM']) # NI_TTM 결측치 행 제거 (자동으로 NI 결측행도 제거됨)
-    df_ni['date'] = df_ni['date'].dt.strftime('%Y-%m-%d') # datetime -> 문자열
-    df_ni.to_excel(f"data/{stk_code}/NI_month.xlsx", index=False)
+        # NI_TTM(최근 4분기 합산 순이익) column 생성
+        mask = df_ni[NI.label] != 0
+        ni_nonzero = df_ni.loc[mask, NI.label]
+        ni_ttm_nonzero = ni_nonzero.rolling(window=4, min_periods=4).sum() # 0이 아닌 값들만 따로 꺼내 rolling TTM 계산
+        df_ni.loc[mask, 'NI_TTM'] = ni_ttm_nonzero.values # 원래 df_ni에 NI_TTM 컬럼 만들고, 0이 아닌 곳에만 값 채우기
+        df_ni['NI_TTM'] = df_ni['NI_TTM'].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
+        #df_ni = df_ni.dropna(subset=['NI_TTM']) # NI_TTM 결측치 행 제거 (자동으로 NI 결측행도 제거됨)
+        df_ni['date'] = df_ni['date'].dt.strftime('%Y-%m-%d') # datetime -> 문자열
+        df_ni.to_excel(os.path.join(base_dir, "NI_month.xlsx"), index=False)
+        # ------------------------------------------------------------------------------------------------------------------
 
-    print("✅ 모든 DART 데이터 저장 완료.")
+        print("✅ 모든 DART 데이터 저장 완료.")

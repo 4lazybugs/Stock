@@ -6,3 +6,4 @@ stock_key.pub
 *.pdf
 !load_data/DART_instruction.pdf
 *.png
+.env
