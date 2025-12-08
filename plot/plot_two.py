@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import os
+from config import get_config
 
 def plot_data(file_path, freq='day', value_col=None, 
               start=None, end=None, step=1, ax=None, 
@@ -72,8 +73,9 @@ def plot_data(file_path, freq='day', value_col=None,
 
 
 if __name__ == "__main__":
-    start, end = '2017-12-01', '2025-12-07'
-    step = 10
+    config = get_config()
+    start, end = config.date['start'], config.date['end']
+    step = 2
 
     fig, ax_left = plt.subplots(figsize=(12, 5))
     ax_right = ax_left.twinx()   # 오른쪽 y축 하나 생성
@@ -128,14 +130,14 @@ if __name__ == "__main__":
     fpth = 'data/EXCHANGE.xlsx'
     plot_data(fpth, freq='day', value_col=f'EXCHANGE',
             start=start, end=end,
-            step=50, ax=ax_left, label='EXCHANGE[₩/$]')
+            step=step, ax=ax_left, label='EXCHANGE[₩/$]')
     ax_left.set_ylabel('EXCHANGE', fontsize=15)
     ax_left.set_title('<EXCHANGE_RATE and KOSPI>', fontsize=20)
 
     fpth = 'data/KOSPI/PRICE_day.xlsx'
     plot_data(fpth, freq='day', value_col=f'KOSPI',
             start=start, end=end,
-            step=50, ax=ax_right, label='KOSPI')
+            step=step, ax=ax_right, label='KOSPI')
     ax_right.set_ylabel('KOSPI', fontsize=15)
 
     # 왼쪽/오른쪽 축에서 handle & label 합치기
