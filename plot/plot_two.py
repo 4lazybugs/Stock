@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-import mplcursors
 import numpy as np
 import pandas as pd
+import os
 
 def plot_data(file_path, freq='day', value_col=None, 
               start=None, end=None, step=1, ax=None, 
@@ -85,16 +85,15 @@ if __name__ == "__main__":
             step=step, ax=ax_left, label='PER')
     ax_left.set_ylabel('PER', fontsize=15)
     ax_left.set_title('<PER & PBR>', fontsize=20)
-    '''
 
-    fpth = 'data/000660/PRICE_day.xlsx'
+    fpth = 'data/삼성생명_032830/PRICE_day.xlsx'
     plot_data(fpth, freq='month', value_col=f'Close',
             start=start, end=end,
             step=step, ax=ax_left, label='Close')
     ax_left.set_ylabel('SK HY', fontsize=15)
     ax_left.set_title('<PBR & SK>', fontsize=20)
 
-    fpth = 'data/000660/PBR_day.xlsx'
+    fpth = 'data/삼성생명_032830/PBR_day.xlsx'
     plot_data(fpth, freq='month', value_col=f'PBR',
             start=start, end=end,
             step=step, ax=ax_right, label='PBR')
@@ -114,6 +113,7 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig(f'plot/CPI and MARKET_INTEREST.png', dpi=600)
     plt.show()
+    '''
 
     '''
     fpth = 'data/CPI.xlsx'
@@ -124,14 +124,36 @@ if __name__ == "__main__":
     ax_left.set_title('<CPI % Market Interest>', fontsize=20)
     '''
 
-    '''
+    ########### KOSPI & EXCHANGE_RATE ############
     fpth = 'data/EXCHANGE.xlsx'
     plot_data(fpth, freq='day', value_col=f'EXCHANGE',
             start=start, end=end,
-            step=step, ax=ax_left, label='EXCHANGE[₩/$]')
+            step=50, ax=ax_left, label='EXCHANGE[₩/$]')
     ax_left.set_ylabel('EXCHANGE', fontsize=15)
     ax_left.set_title('<EXCHANGE_RATE and KOSPI>', fontsize=20)
-    '''
+
+    fpth = 'data/KOSPI/PRICE_day.xlsx'
+    plot_data(fpth, freq='day', value_col=f'KOSPI',
+            start=start, end=end,
+            step=50, ax=ax_right, label='KOSPI')
+    ax_right.set_ylabel('KOSPI', fontsize=15)
+
+    # 왼쪽/오른쪽 축에서 handle & label 합치기
+    lines_left, labels_left = ax_left.get_legend_handles_labels()
+    line_left = ax_left.get_lines()[0].set_color("C0")
+    lines_right, labels_right = ax_right.get_legend_handles_labels()
+    line_right = ax_right.get_lines()[0].set_color("C1")
+    
+    ax_left.legend(
+        lines_left + lines_right, labels_left + labels_right,
+        loc='lower left', fontsize=15
+    )
+
+    plt.tight_layout()
+    fdir = 'plot/ecos_figs'
+    os.makedirs(fdir, exist_ok=True)
+    plt.savefig(f'{fdir}/EXCHANGE_RATE_&_KOSPI.png', dpi=600)
+    plt.show()
 
     '''
     fpth = 'data/MARKET_INTEREST.xlsx'

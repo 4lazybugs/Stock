@@ -1,5 +1,7 @@
 target_corp_names:
   - "삼성중공업"
+  - "삼성생명"
+  - "삼성전자"
 
 date:
   start: "2000-01-01"
