@@ -82,7 +82,7 @@ class BaseMetric:
 
     # 공통 폴백 + 최신성 선택
     def fetch_with_fallback(self, corp_code: str, date: _date):
-        def try_once(by, rc):
+        def try_once(by, rc): # by: business year, rc: report code
             data = self._request(corp_code, by, rc)
             val = self.parse(data)
             return val, by, rc
