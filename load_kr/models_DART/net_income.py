@@ -43,7 +43,10 @@ class NI(BaseMetric):
             if (aid in id_exact and nm in nm_exact):
                 best = it
                 break  # 더 볼 필요 없이 확정
-
-        # 지배기업소유주지분 즉, 당기순이익 return
-        v = self.to_float(best.get("thstrm_amount"))
-        return v
+        
+        if best is None: # 이렇게 예외처리 하지 않으면 best가 None일 때 get("thstrm_amount")에서 에러남
+            return None
+         
+        else:
+            # 지배기업소유주지분 즉, 당기순이익 return
+            return self.to_float(best.get("thstrm_amount"))
