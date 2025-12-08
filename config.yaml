@@ -2,5 +2,5 @@ target_corp_names:
   - "삼성중공업"
 
 date:
-  start: "2020-01-01"
-  end: "2025-12-01"
+  start: "2000-01-01"
+  end: "2025-12-08"

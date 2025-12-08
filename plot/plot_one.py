@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
-import mplcursors
 import numpy as np
 import pandas as pd
-
+from config import get_config
 
 def plot_data(file_path, freq='day', value_col=None,
               start=None, end=None, step=1, ax=None,
@@ -80,24 +79,48 @@ def plot_data(file_path, freq='day', value_col=None,
     # mplcursors.cursor(ax.lines, hover=True)
 
 if __name__ == "__main__":
-    # 연도 데이터니까 이렇게 쓰는 게 자연스러움
-    start, end = '2000-01-01', '2025-12-02'
-    step = 5
+    config = get_config()
+    start, end = config.date["start"], config.date["end"]
 
+    ####### ~EMPLOY #######
     fig, ax = plt.subplots(figsize=(12, 5))
-
     metric = '~EMPLOY'
     fpth = f'data/{metric}.xlsx'
-
     plot_data(fpth, freq='month', value_col=metric,
               start=start,end=end,
-              normalize=False,step=step,
+              normalize=False,step=5,
               ax=ax, label=metric
     )
     ax.set_ylabel(metric)
-
-    # 먼저 저장, 그 다음 보여주기 (취향 따라 순서 바꿔도 큰 문제는 없음)
-    plt.title(f'{metric} over Time', fontsize=16)
     plt.tight_layout()
-    plt.savefig(f'plot/{metric}.png', dpi=600)
+    plt.title(f'{metric} over Time', fontsize=16)
+    plt.savefig(f'plot/~EMPLOY.png', dpi=600)
+    plt.show()
+
+    ####### MARKET_INTEREST #######
+    fig, ax = plt.subplots(figsize=(12, 5))
+    fpth = f'data/MARKET_INTEREST.xlsx'
+    plot_data(fpth, freq='day', value_col="MARKET_INTEREST",
+              start=start,end=end,
+              normalize=False,step=200,
+              ax=ax, label="MARKET_INTEREST"
+    )
+    ax.set_ylabel("MARKET_INTEREST")
+    plt.tight_layout()
+    plt.title(f'MARKET_INTEREST over Time', fontsize=16)
+    plt.savefig(f'plot/MARKET_INTEREST.png', dpi=600)
+    plt.show()
+
+    ####### EXCHANGE_RATE #######
+    fig, ax = plt.subplots(figsize=(12, 5))
+    fpth = f'data/EXCHANGE.xlsx'
+    plot_data(fpth, freq='day', value_col="EXCHANGE",
+              start=start,end=end,
+              normalize=False,step=300,
+              ax=ax, label="EXCHANGE"
+    )
+    ax.set_ylabel("EXCHANGE")
+    plt.tight_layout()
+    plt.title(f'EXCHANGE over day', fontsize=16)
+    plt.savefig(f'plot/EXCHANGE.png', dpi=600)
     plt.show()

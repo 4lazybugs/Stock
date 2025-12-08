@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from datetime import date, timedelta
 from models_DART import SHS, EQU, NI, AST  # ✅ BaseMetric import 필요 없음
-from utils import get_config, load_yaml, fetch_corp_codes
+from utils import get_config, fetch_corp_codes
 
 # 날짜 생성 유틸
 # ----------------------------------------------------------------------------
