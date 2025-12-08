@@ -8,8 +8,8 @@ from xml.etree import ElementTree as ET
 from dotenv import load_dotenv
 
 ############ load config.yaml ########################
-def load_yaml(path='load_data/config.yaml'):
-    with open(path, 'r') as f:
+def load_yaml(path='load_kr/config.yaml'):
+    with open(path, 'r', encoding='utf-8') as f:
         raw_config = yaml.safe_load(f)
 
     # 환경 변수 치환 처리
