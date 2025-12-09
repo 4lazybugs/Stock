@@ -8,7 +8,7 @@ from xml.etree import ElementTree as ET
 from dotenv import load_dotenv
 
 ############ load config.yaml ########################
-def load_yaml(path='load_kr/config.yaml'):
+def load_yaml(path='plot/config.yaml'):
     with open(path, 'r', encoding='utf-8') as f:
         raw_config = yaml.safe_load(f)
 
@@ -29,6 +29,7 @@ def get_config():
     parser = argparse.ArgumentParser()
     parser.add_argument("--target_corp_names", type=str, default=default_cfg.get('target_corp_names'))
     parser.add_argument("--date", type=str, default=default_cfg.get('date'))
+    parser.add_argument("--step", type=str, default=default_cfg.get('step'))
 
     args = parser.parse_args()
     return args

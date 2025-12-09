@@ -7,4 +7,4 @@ stock_key.pub
 !load_kr/DART_instruction.pdf
 *.png
 .env
-plot/ecos_figs/*.png
+plot/*.png

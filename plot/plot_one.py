@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from utils import get_config
+from utils import get_config, fetch_corp_codes
+import os
 
 def plot_data(file_path, freq='day', value_col=None,
               start=None, end=None, step=1, ax=None,
@@ -74,67 +75,87 @@ def plot_data(file_path, freq='day', value_col=None,
                        rotation=45, fontsize=10, fontstyle='italic')
 
     ax.legend()
-
     # 마우스 오버하면 값 보여주는 기능 (원하면 주석 해제)
     # mplcursors.cursor(ax.lines, hover=True)
+
+def plot_corp(corp_name, stk_code, metric, freq, start, end, step=10):
+    # 파일 경로
+    fpth = f'data/{corp_name}_{stk_code}/{metric}_{freq}.xlsx'
+
+    # Figure 생성
+    fig, ax = plt.subplots(figsize=(12, 5))
+
+    # 데이터 플롯
+    plot_data(fpth, freq=freq, value_col=f"{metric}",
+              start=start, end=end,
+              normalize=False, step=step, ax=ax,label=f"{metric}"
+    )
+
+    # Label, Title
+    ax.set_ylabel(f"{metric}")
+    plt.tight_layout()
+    plt.title(f"{metric} over {freq}_by{step}{freq}", fontsize=16)
+
+    # 저장 경로 설정 후 저장
+    base_dir = f'plot/corp_figs_one/{corp_name}_{stk_code}'
+    os.makedirs(base_dir, exist_ok=True)
+    plt.savefig(f'{base_dir}/{metric}_{freq}.png', dpi=600)
+    plt.show()
+
+
+def plot_macro(fpth, metric, freq, step, start, end):
+    fig, ax = plt.subplots(figsize=(12, 5))
+
+    label = metric
+    plot_data(fpth, freq=freq, value_col=metric,
+              start=start, end=end,
+              normalize=False, step=step, ax=ax, label=label
+    )
+
+    ax.set_ylabel(metric)
+    plt.tight_layout()
+
+    plt.title(f'{label} over {freq}', fontsize=16)
+
+    os.makedirs('plot/macro_figs', exist_ok=True)
+    plt.savefig(f'plot/macro_figs/{metric}.png', dpi=600)
+    plt.show()
+
 
 if __name__ == "__main__":
     config = get_config()
     start, end = config.date["start"], config.date["end"]
+    api_key = os.getenv("DART_API_KEY")
+    metrics, freq, step = ["PBR", "PER", "ROE", "ROA"], "day", config.step 
 
-    ####### ~EMPLOY #######
-    fig, ax = plt.subplots(figsize=(12, 5))
-    metric = '~EMPLOY'
-    fpth = f'data/{metric}.xlsx'
-    plot_data(fpth, freq='month', value_col=metric,
-              start=start,end=end,
-              normalize=False,step=5,
-              ax=ax, label=metric
-    )
-    ax.set_ylabel(metric)
-    plt.tight_layout()
-    plt.title(f'{metric} over Time', fontsize=16)
-    plt.savefig(f'plot/~EMPLOY.png', dpi=600)
-    plt.show()
+    for target_corp_name in config.target_corp_names:
+        corp_name, corp_code, stk_code = fetch_corp_codes(target_corp_name, api_key)
 
-    ####### MARKET_INTEREST #######
-    fig, ax = plt.subplots(figsize=(12, 5))
-    fpth = f'data/MARKET_INTEREST.xlsx'
-    plot_data(fpth, freq='day', value_col="MARKET_INTEREST",
-              start=start,end=end,
-              normalize=False,step=200,
-              ax=ax, label="MARKET_INTEREST"
-    )
-    ax.set_ylabel("MARKET_INTEREST")
-    plt.tight_layout()
-    plt.title(f'MARKET_INTEREST over Time', fontsize=16)
-    plt.savefig(f'plot/MARKET_INTEREST.png', dpi=600)
-    plt.show()
-
-    ####### EXCHANGE_RATE #######
-    fig, ax = plt.subplots(figsize=(12, 5))
-    fpth = f'data/EXCHANGE.xlsx'
-    plot_data(fpth, freq='day', value_col="EXCHANGE",
-              start=start,end=end,
-              normalize=False,step=300,
-              ax=ax, label="EXCHANGE"
-    )
-    ax.set_ylabel("EXCHANGE")
-    plt.tight_layout()
-    plt.title(f'EXCHANGE over day', fontsize=16)
-    plt.savefig(f'plot/EXCHANGE.png', dpi=600)
-    plt.show()
+        # 반복 호출
+        for metric in metrics:
+            plot_corp(corp_name, stk_code, metric, freq, start, end, step=step)
 
     ####### KOSPI #######
-    fig, ax = plt.subplots(figsize=(12, 5))
-    fpth = f'data/KOSPI/PRICE_day.xlsx'
-    plot_data(fpth, freq='day', value_col="KOSPI",
-              start=start,end=end,
-              normalize=False,step=1,
-              ax=ax, label="KOSPI"
+    plot_macro(fpth='data/KOSPI/PRICE_day.xlsx', metric='KOSPI',
+              freq='day', step=step, start=start, end=end
     )
-    ax.set_ylabel("KOSPI")
-    plt.tight_layout()
-    plt.title(f'KOSPI over day', fontsize=16)
-    plt.savefig(f'plot/KOSPI.png', dpi=600)
-    plt.show()
+
+    ####### ~EMPLOY #######
+    plot_macro(fpth='data/~EMPLOY.xlsx', metric='~EMPLOY',
+              freq='month', step=step, start=start, end=end,
+    )
+
+    ####### MARKET_INTEREST #######
+    plot_macro(fpth='data/MARKET_INTEREST.xlsx', metric='MARKET_INTEREST',
+              freq='day', step=step, start=start, end=end
+    )
+
+    ####### EXCHANGE_RATE #######
+    plot_macro(fpth='data/EXCHANGE.xlsx', metric='EXCHANGE',
+              freq='day', step=step, start=start, end=end
+    )
+
+    ####### EXCHANGE_RATE #######
+    plot_macro(fpth='data/GDP.xlsx', metric='GDP',
+              freq='year', step=step, start=start, end=end
+    )

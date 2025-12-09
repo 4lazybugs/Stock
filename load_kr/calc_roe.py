@@ -13,16 +13,16 @@ if __name__ == "__main__":
         corp_name, corp_code, stk_code = fetch_corp_codes(target_corp_name, api_key)
         
         # 주가
-        df_price = pd.read_excel("data/010140/PRICE_day.xlsx") 
+        df_price = pd.read_excel(f"data/{corp_name}_{stk_code}/PRICE_day.xlsx") 
         df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
 
         # 지배주주순이익
-        df_ni = pd.read_excel("data/010140/NI_month.xlsx") 
+        df_ni = pd.read_excel(f"data/{corp_name}_{stk_code}/NI_month.xlsx") 
         date_ni = pd.to_datetime(df_ni['date']) # str -> datetime
         date_ni = date_ni.dt.strftime('%Y-%m').values # series -> numpy array
 
         # 발행주식수
-        df_equ = pd.read_excel("data/010140/EQU_month.xlsx")
+        df_equ = pd.read_excel(f"data/{corp_name}_{stk_code}/EQU_month.xlsx")
         date_equ = pd.to_datetime(df_equ['date']) # str -> datetime
         date_equ = date_equ.dt.strftime('%Y-%m').values # series -> numpy array
 
@@ -52,4 +52,4 @@ if __name__ == "__main__":
 
         # save to excel : roe
         df_roe['date'] = df_roe['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-        df_roe.to_excel("data/010140/ROE_day.xlsx", index=False) # save to excel
+        df_roe.to_excel(f"data/{corp_name}_{stk_code}/ROE_day.xlsx", index=False) # save to excel

@@ -29,6 +29,7 @@ def get_config():
     parser = argparse.ArgumentParser()
     parser.add_argument("--target_corp_names", type=str, default=default_cfg.get('target_corp_names'))
     parser.add_argument("--date", type=str, default=default_cfg.get('date'))
+    parser.add_argument("--step", type=str, default=default_cfg.get('step'))
 
     args = parser.parse_args()
     return args
