@@ -25,12 +25,25 @@ def get_kospi(session, code, start_date_str, end_date_str):
     page = 1
     results = []
     stop_flag = False
+    max_page = None
 
     while True:
         url = f"https://finance.naver.com/sise/sise_index_day.naver?code={code}&page={page}"
         r = session.get(url, timeout=10)
         r.encoding = "euc-kr"
         soup = BeautifulSoup(r.text, "html.parser")
+
+        # 마지막 페이지 탐색
+        if max_page is None:
+            pg_rr = soup.select_one("td.pgRR a")
+            if pg_rr and "page=" in pg_rr["href"]:
+                try:
+                    max_page = int(pg_rr["href"].split("page=")[-1])
+                except ValueError:
+                    max_page = page  # 파싱 실패 시 현재 페이지를 마지막으로 간주
+            else:
+                # 페이지 네비가 없으면 현재 페이지가 마지막 페이지
+                max_page = page
         
         # ✅ 일별 시세 테이블
         table = soup.select_one("div.box_type_m > table.type_1")
@@ -43,7 +56,6 @@ def get_kospi(session, code, start_date_str, end_date_str):
             print(f"⚠️ {code} - {page} 페이지에 tr 없음 → 종료")
             break
 
-        page_has_data = False
         for row in rows:
             tds = row.find_all("td")
             # 데이터가 아닌 공백/구분선/헤더 행 걸러내기
@@ -79,13 +91,16 @@ def get_kospi(session, code, start_date_str, end_date_str):
 
             # ✅ 사진 순서대로 저장: 날짜, 체결가, 전일비, 등락률, 거래량, 거래대금
             results.append((trade_date_str, close, change, rate, volume, money))
-            page_has_data = True
             print(f"{code} - {page} 페이지: {trade_date_str} 데이터 수집 완료")
+
+        if stop_flag: break
+        # 마지막 페이지를 넘지 않도록 제한
+        if max_page is not None and page >= max_page:
+            print(f"{code} - 마지막 페이지({max_page}) 도달 → 크롤링 종료")
+            break
 
         page += 1
         time.sleep(0.1)
-
-        if stop_flag: break
 
     return results
 ######################################################################################

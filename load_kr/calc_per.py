@@ -1,53 +1,64 @@
 import pandas as pd
 import numpy as np
+from utils import get_config, fetch_corp_codes
+import os
 
-# 주가
-df_price = pd.read_excel("data/000660/PRICE_day.xlsx") 
-df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
+if __name__ == "__main__":
+    config = get_config()
+    api_key = os.getenv("DART_API_KEY")
+    start, end = config.date["start"], config.date["end"]
+    target_corp_names = config.target_corp_names
 
-# 지배주주 순이익
-df_ni = pd.read_excel("data/000660/NI_month.xlsx") 
-date_ni = pd.to_datetime(df_ni['date']) # str -> datetime
-date_ni = date_ni.dt.strftime('%Y-%m').values # series -> numpy array
+    for target_corp_name in target_corp_names:
+        corp_name, corp_code, stk_code = fetch_corp_codes(target_corp_name, api_key)
+        
+        # 주가
+        df_price = pd.read_excel(f"data/{corp_name}_{stk_code}/PRICE_day.xlsx") 
+        df_price['date'] = pd.to_datetime(df_price['date']) # str -> datetime
 
-# 발행주식수
-df_shs = pd.read_excel("data/000660/SHS_month.xlsx")
-date_shs = pd.to_datetime(df_shs['date']) # str -> datetime
-date_shs = date_shs.dt.strftime('%Y-%m').values # series -> numpy array
+        # 지배주주 순이익
+        df_ni = pd.read_excel(f"data/{corp_name}_{stk_code}/NI_month.xlsx") 
+        date_ni = pd.to_datetime(df_ni['date']) # str -> datetime
+        date_ni = date_ni.dt.strftime('%Y-%m').values # series -> numpy array
 
-# per 
-df_per = pd.DataFrame(columns=['date', 'PER'])
-df_per['date'] = df_price['date']
+        # 발행주식수
+        df_shs = pd.read_excel(f"data/{corp_name}_{stk_code}/SHS_month.xlsx")
+        date_shs = pd.to_datetime(df_shs['date']) # str -> datetime
+        date_shs = date_shs.dt.strftime('%Y-%m').values # series -> numpy array
 
-# EPS
-df_eps = pd.DataFrame(columns=['date', 'EPS'])
-df_eps['date'] = df_price['date']
+        # per 
+        df_per = pd.DataFrame(columns=['date', 'PER'])
+        df_per['date'] = df_price['date']
 
-for i in range(len(df_price)):
-    flag1, flag2 = False, False
-    
-    date_per = df_price['date'][i].strftime('%Y-%m')
-    if date_per in date_ni:
-        flag1 = True
-        # i번째 ni 날짜 반환 : i번째 ni 날짜 ∈ {price의 날짜}
-        idx_ni = np.where(date_ni == date_per)[0][0] # [0][0] : array[3,2] -> [3,2] -> 3  
-    if date_per in date_shs:
-        # i번째 shs 날짜 반환 : i번째 shs 날짜 ∈ {price의 날짜}
-        flag2 = True
-        idx_shs = np.where(date_shs == date_per)[0][0] # [0][0] : array[3,2] -> [3,2] -> 3    
+        # EPS
+        df_eps = pd.DataFrame(columns=['date', 'EPS'])
+        df_eps['date'] = df_price['date']
 
-    if flag1 and flag2:
-        price = df_price.loc[i, 'Close']
-        ni = df_ni.loc[idx_ni, 'NI_TTM']
-        shs = df_shs.loc[idx_shs, 'SHS']
-        eps = ni/shs # calc eps
-        df_eps.loc[i, 'EPS'] = eps # calc eps
-        df_per.loc[i, 'PER'] = price / eps # calc per
+        for i in range(len(df_price)):
+            flag1, flag2 = False, False
+            
+            date_per = df_price['date'][i].strftime('%Y-%m')
+            if date_per in date_ni:
+                flag1 = True
+                # i번째 ni 날짜 반환 : i번째 ni 날짜 ∈ {price의 날짜}
+                idx_ni = np.where(date_ni == date_per)[0][0] # [0][0] : array[3,2] -> [3,2] -> 3  
+            if date_per in date_shs:
+                # i번째 shs 날짜 반환 : i번째 shs 날짜 ∈ {price의 날짜}
+                flag2 = True
+                idx_shs = np.where(date_shs == date_per)[0][0] # [0][0] : array[3,2] -> [3,2] -> 3    
 
-# save to excel : eps
-df_eps['date'] = df_eps['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_eps.to_excel("data/000660/EPS_day.xlsx", index=False) # save to excel
+            if flag1 and flag2:
+                price = df_price.loc[i, 'Close']
+                ni = df_ni.loc[idx_ni, 'NI_TTM']
+                shs = df_shs.loc[idx_shs, 'SHS']
+                eps = ni/shs # calc eps
+                df_eps.loc[i, 'EPS'] = eps # calc eps
+                df_per.loc[i, 'PER'] = price / eps # calc per
 
-# save to excel : per
-df_per['date'] = df_per['date'].dt.strftime('%Y-%m-%d') # datetime -> str
-df_per.to_excel("data/000660/PER_day.xlsx", index=False) # save to excel
+        # save to excel : eps
+        df_eps['date'] = df_eps['date'].dt.strftime('%Y-%m-%d') # datetime -> str
+        df_eps.to_excel(f"data/{corp_name}_{stk_code}/EPS_day.xlsx", index=False) # save to excel
+
+        # save to excel : per
+        df_per['date'] = df_per['date'].dt.strftime('%Y-%m-%d') # datetime -> str
+        df_per.to_excel(f"data/{corp_name}_{stk_code}/PER_day.xlsx", index=False) # save to excel

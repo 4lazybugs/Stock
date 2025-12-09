@@ -25,12 +25,25 @@ def date_to_page(session, code, start_date_str, end_date_str):
     page= 1
     results = []
     flag_stop = False
+    max_page = None
 
     while True:
         url = f"https://finance.naver.com/item/sise_day.naver?code={code}&page={page}"
         r = session.get(url, timeout=10)
         r.encoding = "euc-kr"
         soup = BeautifulSoup(r.text, "html.parser")
+
+        # 마지막 페이지 탐색
+        if max_page is None:
+            pg_rr = soup.select_one("td.pgRR a")
+            if pg_rr and "page=" in pg_rr["href"]:
+                try:
+                    max_page = int(pg_rr["href"].split("page=")[-1])
+                except ValueError:
+                    max_page = page  # 파싱 실패 시 현재 페이지를 마지막으로 간주
+            else:
+                # 페이지 네비가 없으면 현재 페이지가 마지막 페이지
+                max_page = page
 
         # 일일시세 테이블 선택
         table = soup.select_one("table.type2")
@@ -63,11 +76,15 @@ def date_to_page(session, code, start_date_str, end_date_str):
             results.append((trade_date_str, close, open_, high, low, volume))
             print(f"{code} - {page} 페이지에서 {trade_date_str} 날짜 데이터 크롤링 완료")
 
+        if flag_stop: break
+        # 마지막 페이지를 넘지 않도록 제한
+        if max_page is not None and page >= max_page:
+            print(f"{code} - 마지막 페이지({max_page}) 도달 → 크롤링 종료")
+            break
+
         page += 1
         time.sleep(0.1)
         
-        if flag_stop: break
-
     return results
 ############################################################################
 
