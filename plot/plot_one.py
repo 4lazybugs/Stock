@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from config import get_config
+from utils import get_config
 
 def plot_data(file_path, freq='day', value_col=None,
               start=None, end=None, step=1, ax=None,
