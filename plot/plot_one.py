@@ -5,7 +5,7 @@ from utils import get_config, fetch_corp_codes
 import os
 
 def plot_data(file_path, freq='day', value_col=None,
-              start=None, end=None, step=1, ax=None,
+              start=None, end=None, step=None, ax=None,
               normalize=True, label=None):
 
     if ax is None:
@@ -78,7 +78,7 @@ def plot_data(file_path, freq='day', value_col=None,
     # 마우스 오버하면 값 보여주는 기능 (원하면 주석 해제)
     # mplcursors.cursor(ax.lines, hover=True)
 
-def plot_corp(corp_name, stk_code, metric, freq, start, end, step=10):
+def plot_corp(corp_name, stk_code, metric, freq, start, end, step):
     # 파일 경로
     fpth = f'data/{corp_name}_{stk_code}/{metric}_{freq}.xlsx'
 
