@@ -9,7 +9,7 @@ class SHS(BaseMetric):
             return None
         for it in (data.get("list") or []):
             se = (it.get("se") or "").strip()
-            if ("보통주" in se) or ("보통주식" in se):
+            if any(k in se for k in ["보통주", "보통주식", "의결권 있는 주식"]):
                 val = it.get("istc_totqy")
                 try:
                     return int(str(val).replace(",", "").strip()) if val else None
