@@ -119,7 +119,7 @@ def plot_macro(fpth, metric, freq, step, start, end):
 
     os.makedirs('plot/macro_figs', exist_ok=True)
     plt.savefig(f'plot/macro_figs/{metric}.png', dpi=600)
-    plt.show()
+    #plt.show()
 
 
 if __name__ == "__main__":

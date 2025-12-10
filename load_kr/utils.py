@@ -38,51 +38,59 @@ def get_config():
 
 ############## 기업 코드 로드 ###########################
 load_dotenv()
-def fetch_corp_codes(target_corp_name, api_key):
-    api_key = os.getenv("DART_API_KEY")
+def fetch_corp_codes(target_corp_name, api_key=None):
+    # 인자로 api_key 안 넘기면 환경변수에서 가져오도록 (기존 코드 유지 느낌)
+    if api_key is None:
+        api_key = os.getenv("DART_API_KEY")
+
     url = f"https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key={api_key}"
     
-    # 🔁 재시도 설정 (심플 버전)
+    # 🔁 재시도 설정 (모든 예외에 대해 재시도)
     last_exc = None
     max_retry = 100
     retry_delay = 0.1  # 초
 
+    root = None  # XML 루트 노드
+
     for attempt in range(1, max_retry + 1):
         try:
-            # 여기서 timeout 초과하면 Timeout 예외
+            # 1) 네트워크 요청
             resp = requests.get(url, timeout=0.5)
             resp.raise_for_status()
-            break  # 성공하면 루프 탈출
 
-        except Timeout as e:
+            # 2) ZIP 열기
+            z = zipfile.ZipFile(io.BytesIO(resp.content))
+
+            # 3) ZIP 안의 CORPCODE.xml 파싱
+            with z.open("CORPCODE.xml") as f:
+                tree = ET.parse(f)
+                root = tree.getroot()
+
+            # 여기까지 문제 없으면 루프 성공 종료
+            break
+
+        except Exception as e:
+            # Timeout, HTTPError, ConnectionError, BadZipFile, ParseError 등
             last_exc = e
             print(
-                f"[corpCode Timeout] attempt {attempt}/{max_retry} "
-                f"→ {retry_delay}초 후 재시도"
+                f"[corpCode Retry] attempt {attempt}/{max_retry} "
+                f"→ {retry_delay}초 후 재시도 (err={type(e).__name__})"
             )
+
             if attempt == max_retry:
-                # 마지막 시도까지 실패하면 예외 그대로 올림
-                raise
+                # 마지막 시도까지 실패하면 마지막 예외를 그대로 올림
+                raise last_exc
+
             time.sleep(retry_delay)
 
-        except RequestException as e:
-            # HTTP 오류(4xx, 5xx 등)나 기타 요청 에러는 바로 실패
-            print(f"[corpCode RequestException] {e}")
-            raise
+    # 여기까지 왔다면 root는 정상적으로 파싱된 상태
+    for item in root.iter("list"):
+        corp_code = item.findtext("corp_code")
+        corp_name = item.findtext("corp_name")
+        stock_code = item.findtext("stock_code")
 
-    # 반환은 ZIP 압축된 바이너리
-    z = zipfile.ZipFile(io.BytesIO(resp.content))
-    # 압축 파일 안에 CORPCODE.xml 파일 있음
-    with z.open("CORPCODE.xml") as f:
-        tree = ET.parse(f)
-        root = tree.getroot()
+        if corp_name == target_corp_name:
+            return corp_name, corp_code, stock_code
 
-        for item in root.iter("list"):
-            corp_code = item.findtext("corp_code")
-            corp_name = item.findtext("corp_name")
-            stock_code = item.findtext("stock_code")
-
-            if corp_name == target_corp_name:
-                    return corp_name, corp_code, stock_code
-        
+    # 찾는 회사가 없으면 None 반환 (이건 네트워크/파싱 에러가 아니므로 재시도 대상 아님)
     return None, None, None
