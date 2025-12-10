@@ -53,3 +53,4 @@ if __name__ == "__main__":
         # save to excel : roe
         df_roe['date'] = df_roe['date'].dt.strftime('%Y-%m-%d') # datetime -> str
         df_roe.to_excel(f"data/{corp_name}_{stk_code}/ROE_day.xlsx", index=False) # save to excel
+        print(f"Saved ROE_day.xlsx for {corp_name} ({stk_code})")

@@ -58,7 +58,9 @@ if __name__ == "__main__":
         # save to excel : eps
         df_eps['date'] = df_eps['date'].dt.strftime('%Y-%m-%d') # datetime -> str
         df_eps.to_excel(f"data/{corp_name}_{stk_code}/EPS_day.xlsx", index=False) # save to excel
+        print(f"[{corp_name}] EPS_day.xlsx saved.")
 
         # save to excel : per
         df_per['date'] = df_per['date'].dt.strftime('%Y-%m-%d') # datetime -> str
         df_per.to_excel(f"data/{corp_name}_{stk_code}/PER_day.xlsx", index=False) # save to excel
+        print(f"[{corp_name}] PER_day.xlsx saved.")

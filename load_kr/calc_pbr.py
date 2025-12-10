@@ -52,3 +52,4 @@ if __name__ == "__main__":
 
         df_pbr['date'] = df_pbr['date'].dt.strftime('%Y-%m-%d') # datetime -> str
         df_pbr.to_excel(f"data/{corp_name}_{stk_code}/PBR_day.xlsx", index=False) # save to excel
+        print(f"[{corp_name}] PBR_day.xlsx saved.")
