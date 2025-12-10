@@ -89,24 +89,19 @@ class BaseMetric:
                 resp.raise_for_status()
                 return resp.json()
 
-            except Timeout as e:
+            except (Timeout, RequestException) as e:
+                # ✅ 에러 종류 상관 없이 전부 재시도
                 last_exc = e
                 print(
-                    f"[Timeout] attempt {attempt}/{max_retry} "
-                    f"(corp={corp_code}, by={by}, rc={rc}) → {retry_delay}초 후 재시도"
+                    f"[Retry] attempt {attempt}/{max_retry} "
+                    f"(corp={corp_code}, by={by}, rc={rc}) | {type(e).__name__}: {e}"
                 )
+
                 if attempt == max_retry:
-                    # 마지막 시도까지 실패하면 예외 그대로 올림
-                    raise
+                    # 마지막 시도까지 실패하면 그대로 예외 올림
+                    raise last_exc
+
                 time.sleep(retry_delay)
-
-            except RequestException as e:
-                # HTTP 오류(4xx, 5xx 등)나 기타 요청 에러는 바로 실패시키는 쪽이 안전
-                print(
-                    f"[RequestException] corp={corp_code}, by={by}, rc={rc} | {e}"
-                )
-                raise
-
 
     # 공통 폴백 + 최신성 선택
     def fetch_with_fallback(self, corp_code: str, date: _date):
