@@ -1,6 +1,7 @@
 import os
 import requests
-import datetime
+from requests.exceptions import Timeout, RequestException 
+import time
 from datetime import date as _date
 
 # -----------------------
@@ -76,9 +77,36 @@ class BaseMetric:
         }
         if "fnlttSinglAcntAll" in self.json_pth:
             params.setdefault("fs_div", "CFS")
-        resp = requests.get(url, params=params, timeout=300)
-        resp.raise_for_status()
-        return resp.json()
+
+        last_exc = None
+        max_retry = 10
+        retry_delay = 0.1
+
+        for attempt in range(1, max_retry + 1):
+            try:
+                # ⬇ 여기서 3초 동안 응답 없으면 Timeout 발생
+                resp = requests.get(url, params=params, timeout=0.1)
+                resp.raise_for_status()
+                return resp.json()
+
+            except Timeout as e:
+                last_exc = e
+                print(
+                    f"[Timeout] attempt {attempt}/{max_retry} "
+                    f"(corp={corp_code}, by={by}, rc={rc}) → {retry_delay}초 후 재시도"
+                )
+                if attempt == max_retry:
+                    # 마지막 시도까지 실패하면 예외 그대로 올림
+                    raise
+                time.sleep(retry_delay)
+
+            except RequestException as e:
+                # HTTP 오류(4xx, 5xx 등)나 기타 요청 에러는 바로 실패시키는 쪽이 안전
+                print(
+                    f"[RequestException] corp={corp_code}, by={by}, rc={rc} | {e}"
+                )
+                raise
+
 
     # 공통 폴백 + 최신성 선택
     def fetch_with_fallback(self, corp_code: str, date: _date):
