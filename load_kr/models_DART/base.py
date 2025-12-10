@@ -94,7 +94,7 @@ class BaseMetric:
                 last_exc = e
                 print(
                     f"[Retry] attempt {attempt}/{max_retry} "
-                    f"(corp={corp_code}, by={by}, rc={rc}) | {type(e).__name__}: {e}"
+                    f"(corp={corp_code}, by={by}, rc={rc})"
                 )
 
                 if attempt == max_retry:
