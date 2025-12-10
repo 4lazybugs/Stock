@@ -100,7 +100,9 @@ def plot_corp(corp_name, stk_code, metric, freq, start, end, step):
     base_dir = f'plot/corp_figs_one/{corp_name}_{stk_code}'
     os.makedirs(base_dir, exist_ok=True)
     plt.savefig(f'{base_dir}/{metric}_{freq}.png', dpi=600)
+    print(f'Saved plot for {corp_name} - {metric} at {base_dir}/{metric}_{freq}.png')
     #plt.show()
+    plt.close()
 
 
 def plot_macro(fpth, metric, freq, step, start, end):
@@ -120,6 +122,8 @@ def plot_macro(fpth, metric, freq, step, start, end):
     os.makedirs('plot/macro_figs', exist_ok=True)
     plt.savefig(f'plot/macro_figs/{metric}.png', dpi=600)
     #plt.show()
+    print(f'Saved macro plot for {metric} at plot/macro_figs/{metric}.png')
+    plt.close()
 
 
 if __name__ == "__main__":
