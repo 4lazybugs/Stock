@@ -95,13 +95,13 @@ if __name__ == "__main__":
         df_ni['date'] = pd.to_datetime(df_ni['date'])
 
         # NI(분기순이익) column 생성
+        m = df_ni['date'].dt.month
+        base_month = next((mm for mm in (1, 2, 3) if (m == mm).any()), None) # 1,2,3 중에서 실제로 존재하는 첫 번째 달 찾기
+        mask = (m == base_month) if base_month is not None else pd.Series(False, index=df_ni.index)
         df_ni[NI.label] = np.where(mask, df_ni["NI_YTD"], df_ni["NI_YTD"].diff()) # 선택된 달만 NI_YTD, 나머지는 diff() 사용    
         df_ni[NI.label] = df_ni[NI.label].replace(0, np.nan).ffill() # NaN -> 0 -> "0이 아닌 값" 중 가장 최근
 
         # NI_TTM(최근 4분기 합산 순이익) column 생성
-        m = df_ni['date'].dt.month
-        base_month = next((mm for mm in (1, 2, 3) if (m == mm).any()), None) # 1,2,3 중에서 실제로 존재하는 첫 번째 달 찾기
-        mask = (m == base_month) if base_month is not None else pd.Series(False, index=df_ni.index)
         mask = df_ni[NI.label] != 0
         ni_nonzero = df_ni.loc[mask, NI.label]
         ni_ttm_nonzero = ni_nonzero.rolling(window=4, min_periods=4).sum() # 0이 아닌 값들만 따로 꺼내 rolling TTM 계산
