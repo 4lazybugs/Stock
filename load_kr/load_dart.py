@@ -99,7 +99,9 @@ if __name__ == "__main__":
         m = df_ni['date'].dt.month
         base_month = next((mm for mm in (1, 2, 3) if (m == mm).any()), None) # 1,2,3 중에서 실제로 존재하는 첫 번째 달 찾기
         mask = (m == base_month) if base_month is not None else pd.Series(False, index=df_ni.index)
-        df_ni[NI.label] = np.where(mask, df_ni["NI_YTD"], df_ni["NI_YTD"].diff()) # 선택된 달만 NI_YTD, 나머지는 diff() 사용    
+        df_ni[NI.label] = np.where(mask, df_ni["NI_YTD"], df_ni["NI_YTD"].diff()) # 선택된 달만 NI_YTD, 나머지는 diff() 사용 
+        mask = m.isin([1, 4, 7, 10]) & (df_ni[NI.label] == 0) # 1,4,7,10월이면서 NI가 0인 경우
+        df_ni[NI.label] = np.where(mask, df_ni[NI.label].ffill(), df_ni[NI.label])# 1,4,7,10월에 0인 경우 NI_YTD로 채우기
 
         # NI_TTM(최근 4분기 합산 순이익) column 생성
         mask = df_ni[NI.label] != 0
