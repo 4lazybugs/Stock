@@ -86,10 +86,16 @@ def plot_corp(corp_name, stk_code, metric, freq, start, end, step):
     fig, ax = plt.subplots()
 
     # 데이터 플롯
-    plot_data(fpth, freq=freq, value_col=f"{metric}",
+    if metric == "PRICE":
+        plot_data(fpth, freq=freq, value_col="Close",
+                  start=start, end=end,
+                  normalize=True, step=step, ax=ax,label=f"{metric}"
+        )
+    else:
+        plot_data(fpth, freq=freq, value_col=f"{metric}",
               start=start, end=end,
               normalize=False, step=step, ax=ax,label=f"{metric}"
-    )
+        )
 
     # Label, Title
     ax.set_ylabel(f"{metric}")
@@ -130,7 +136,7 @@ if __name__ == "__main__":
     config = get_config()
     start, end = config.date["start"], config.date["end"]
     api_key = os.getenv("DART_API_KEY")
-    metrics, freq, step = ["PBR", "PER", "ROE", "ROA"], "day", config.step 
+    metrics, freq, step = ["PBR", "PER", "ROE", "ROA", "PRICE"], "day", config.step 
 
     for target_corp_name in config.target_corp_names:
         corp_name, corp_code, stk_code = fetch_corp_codes(target_corp_name, api_key)

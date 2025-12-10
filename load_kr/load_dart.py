@@ -55,14 +55,14 @@ if __name__ == "__main__":
         end_date = config.date['end']
         dates = generate_dates(start_date, end_date, mode="month")
 
-        shs_metric = SHS(api_key=api_key)
-        equ_metric = EQU(api_key=api_key)
+        #shs_metric = SHS(api_key=api_key)
+        #equ_metric = EQU(api_key=api_key)
         ni_metric = NI(api_key=api_key)
-        ast_metric = AST(api_key=api_key)
+        #ast_metric = AST(api_key=api_key)
         
         base_dir = f"data/{corp_name}_{stk_code}"
         os.makedirs(base_dir, exist_ok=True)
-        
+        '''
         # SHS : 발행주식수 #
         # -----------------------------------------------------------------------------
         rows_sh = [row(shs_metric, d) for d in dates] # datetime -> 문자열
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         df_equ[EQU.label] = df_equ[EQU.label].ffill() # 0 -> "0이 아닌 값" 중 가장 최근
         df_equ.to_excel(os.path.join(base_dir, "EQU_month.xlsx"), index=False)
         # ----------------------------------------------------------------------------
-
+        '''
         # NI : 순이익 #
         # -----------------------------------------------------------------------------------------------------------------
         # NI YTD(분기누적순이익) column 생성

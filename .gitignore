@@ -4,6 +4,7 @@ load_kr/dbug.py
 stock_key
 stock_key.pub
 *.pdf
+*.bat
 !load_kr/DART_instruction.pdf
 *.png
 .env
