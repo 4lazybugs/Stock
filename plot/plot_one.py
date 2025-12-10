@@ -83,7 +83,7 @@ def plot_corp(corp_name, stk_code, metric, freq, start, end, step):
     fpth = f'data/{corp_name}_{stk_code}/{metric}_{freq}.xlsx'
 
     # Figure 생성
-    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = plt.subplots()
 
     # 데이터 플롯
     plot_data(fpth, freq=freq, value_col=f"{metric}",
@@ -104,7 +104,7 @@ def plot_corp(corp_name, stk_code, metric, freq, start, end, step):
 
 
 def plot_macro(fpth, metric, freq, step, start, end):
-    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = plt.subplots()
 
     label = metric
     plot_data(fpth, freq=freq, value_col=metric,
