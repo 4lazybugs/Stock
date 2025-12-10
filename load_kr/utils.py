@@ -44,7 +44,7 @@ def fetch_corp_codes(target_corp_name, api_key):
     
     # 🔁 재시도 설정 (심플 버전)
     last_exc = None
-    max_retry = 10
+    max_retry = 100
     retry_delay = 0.1  # 초
 
     for attempt in range(1, max_retry + 1):
