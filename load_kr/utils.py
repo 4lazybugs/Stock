@@ -47,7 +47,7 @@ def fetch_corp_codes(target_corp_name, api_key=None):
     
     # 🔁 재시도 설정 (모든 예외에 대해 재시도)
     last_exc = None
-    max_retry = 100
+    max_retry = 10000
     retry_delay = 0.1  # 초
 
     root = None  # XML 루트 노드
