@@ -138,9 +138,13 @@ if __name__ == "__main__":
     api_key = os.getenv("DART_API_KEY")
     metrics, freq, step = ["PBR", "PER", "ROE", "ROA", "PRICE"], "day", config.step 
 
+    corp_info_map = {}  
     for target_corp_name in config.target_corp_names:
         corp_name, corp_code, stk_code = fetch_corp_codes(target_corp_name, api_key)
+        corp_info_map[target_corp_name] = (corp_name, corp_code, stk_code)
 
+    for target_corp_name in config.target_corp_names:
+        corp_name, corp_code, stk_code = corp_info_map[target_corp_name]
         # 반복 호출
         for metric in metrics:
             plot_corp(corp_name, stk_code, metric, freq, start, end, step=step)

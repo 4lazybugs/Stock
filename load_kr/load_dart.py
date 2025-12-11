@@ -49,8 +49,13 @@ if __name__ == "__main__":
     api_key = os.getenv("DART_API_KEY")
     config = get_config()
 
+    corp_info_map = {}  
     for target_corp_name in config.target_corp_names:
         corp_name, corp_code, stk_code = fetch_corp_codes(target_corp_name, api_key)
+        corp_info_map[target_corp_name] = (corp_name, corp_code, stk_code)
+
+    for target_corp_name in config.target_corp_names:
+        corp_name, corp_code, stk_code = corp_info_map[target_corp_name]
         start_date = config.date['start']
         end_date = config.date['end']
         dates = generate_dates(start_date, end_date, mode="month")
