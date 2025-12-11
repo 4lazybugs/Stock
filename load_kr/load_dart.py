@@ -114,6 +114,8 @@ if __name__ == "__main__":
         ni_nonzero = df_ni.loc[mask, NI.label]
         ni_ttm_nonzero = ni_nonzero.rolling(window=4, min_periods=4).sum() # 0이 아닌 값들만 따로 꺼내 rolling TTM 계산
         df_ni.loc[mask, 'NI_TTM'] = ni_ttm_nonzero.values # 원래 df_ni에 NI_TTM 컬럼 만들고, NI value가 0이 아닌 row에만 값 채우기
+        mask = m.isin([10])
+        df_ni.loc[mask, 'NI_TTM'] = df_ni.loc[mask, 'NI_YTD'] # 4분기 누적 순이익이 곧 TTM 순이익
         df_ni['NI_TTM'] = df_ni['NI_TTM'].ffill().bfill() # NaN -> "NaN이 아닌 값" 중 가장 최근
 
         # 날짜 포맷 변환 및 엑셀 저장
