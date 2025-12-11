@@ -99,8 +99,8 @@ def plot_corp(corp_name, stk_code, metric, freq, start, end, step):
 
     # Label, Title
     ax.set_ylabel(f"{metric}")
-    plt.tight_layout()
     plt.title(f"{metric} over {freq}_by{step}{freq}", fontsize=16)
+    plt.tight_layout()
 
     # 저장 경로 설정 후 저장
     base_dir = f'plot/corp_figs_one/{corp_name}_{stk_code}'
@@ -119,11 +119,10 @@ def plot_macro(fpth, metric, freq, step, start, end):
               start=start, end=end,
               normalize=False, step=step, ax=ax, label=label
     )
-
     ax.set_ylabel(metric)
-    plt.tight_layout()
 
     plt.title(f'{label} over {freq}', fontsize=16)
+    plt.tight_layout()
 
     os.makedirs('plot/macro_figs', exist_ok=True)
     plt.savefig(f'plot/macro_figs/{metric}.png', dpi=600)

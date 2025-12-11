@@ -9,3 +9,9 @@ https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS003&apiId=2022001
 
 
 ## load_price.py
+
+
+## load_Dart.py
+# per 계산할 때 ni_ttm 음수면 최근 양수로 대체 하는 코드 추가
+# ni 계산할때 ni_ytd가 사실 ni임
+# 그러니까 column은 ni_ytd랑 ni_cumulated(ni_ytd 연속 4개 더함) 두개면 충분

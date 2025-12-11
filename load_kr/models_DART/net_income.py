@@ -19,17 +19,16 @@ class NI(BaseMetric):
         id_exact = {
             "ifrs-full_profitlossattributabletoownersofparent",
             "ifrs_profitlossattributabletoownersofparent",
+            "ifrs-full_ProfitLoss",
             "profitlossattributabletoownersofparent",  # 일부 회사는 ifrs- 없이 쓰기도 함
-            "ifrs_Equity"
         }
 
         nm_exact = {
-            "지배기업소유주지분",
-            "지배기업 소유주지분",
-            "지배기업의 소유주지분",
             "지배기업의 소유주에게귀속되는당기순이익(손실)",
             "지배기업의 소유주에게귀속되는당기순이익",
-            "기말자본"
+            "분기순이익",
+            "반기순이익",
+            "부문분기순이익(손실)",
         }
 
         id_exact = {norm(s) for s in id_exact}

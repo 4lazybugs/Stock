@@ -96,24 +96,25 @@ if __name__ == "__main__":
         # -----------------------------------------------------------------------------------------------------------------
         # NI YTD(분기누적순이익) column 생성
         rows_ni = [row(ni_metric, d) for d in dates] # datetime -> 문자열
-        df_ni = pd.DataFrame(rows_ni, columns=["date", "NI_YTD", NI.label, 'NI_TTM'])
+        df_ni = pd.DataFrame(rows_ni, columns=["date", "NI_YTD"])
         df_ni['date'] = pd.to_datetime(df_ni['date'])
-        df_ni["NI_YTD"] = df_ni["NI_YTD"].replace(0, np.nan).ffill() # NaN -> 0 -> "0이 아닌 값" 중 가장 최근
+        df_ni["NI_YTD"] = df_ni["NI_YTD"]
 
         # NI(분기순이익) column 생성
         m = df_ni['date'].dt.month
         mask = m.isin([1, 4, 7, 10])
         ni_col = df_ni["NI_YTD"].copy()
         latest_nonzero = ni_col.where(mask)
-        df_ni.loc[mask, NI.label] = latest_nonzero[mask].ffill().bfill() # NaN -> "NaN이 아닌 값" 중 가장 최근
+        df_ni.loc[mask, NI.label] = latest_nonzero[mask] 
+        df_ni.loc[~mask, NI.label] = 0 
         df_ni[NI.label] = df_ni[NI.label].ffill() # NaN -> "NaN이 아닌 값" 중 가장 최근
 
         # NI_TTM(최근 4분기 합산 순이익) column 생성
-        mask = df_ni[NI.label].notna()
+        mask = (df_ni[NI.label] != 0)
         ni_nonzero = df_ni.loc[mask, NI.label]
         ni_ttm_nonzero = ni_nonzero.rolling(window=4, min_periods=4).sum() # 0이 아닌 값들만 따로 꺼내 rolling TTM 계산
         df_ni.loc[mask, 'NI_TTM'] = ni_ttm_nonzero.values # 원래 df_ni에 NI_TTM 컬럼 만들고, NI value가 0이 아닌 row에만 값 채우기
-        df_ni['NI_TTM'] = df_ni['NI_TTM'].bfill() # NaN -> "NaN이 아닌 값" 중 가장 최근
+        df_ni['NI_TTM'] = df_ni['NI_TTM'].ffill().bfill() # NaN -> "NaN이 아닌 값" 중 가장 최근
 
         # 날짜 포맷 변환 및 엑셀 저장
         df_ni['date'] = df_ni['date'].dt.strftime('%Y-%m-%d') # datetime -> 문자열
