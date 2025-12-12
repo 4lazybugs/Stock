@@ -4,3 +4,4 @@ python load_kr/calc_pbr.py
 python load_kr/calc_per.py
 python load_kr/calc_roa.py
 python load_kr/calc_roe.py
+python plot/plot_one.py
