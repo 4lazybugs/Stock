@@ -79,7 +79,7 @@ class BaseMetric:
             params.setdefault("fs_div", "CFS")
 
         last_exc = None
-        max_retry = 100
+        max_retry = 10000
         retry_delay = 0.1
 
         for attempt in range(1, max_retry + 1):
