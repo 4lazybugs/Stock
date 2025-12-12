@@ -34,15 +34,22 @@ class NI(BaseMetric):
             "부문분기순이익(손실)",
         }
 
+        dt_exact = {
+            "자본 [구성요소]|지배기업의 소유주에게 귀속되는 지분 [구성요소]",
+            "자본 [구성요소]|지배기업의 소유주에게 귀속되는 지분 [구성요소]|이익잉여금 [구성요소]",
+        }
+
         id_exact = {norm(s) for s in id_exact}
         nm_exact = {norm(s) for s in nm_exact}
+        dt_exact = {norm(s) for s in dt_exact}
         best = None
 
         for it in rows:
             aid = norm(it.get("account_id"))
             nm  = norm(it.get("account_nm"))
+            dt = norm(it.get("account_detail"))
 
-            if (aid in id_exact and nm in nm_exact):
+            if (aid in id_exact and nm in nm_exact and dt in dt_exact):
                 best = it
                 break  # 더 볼 필요 없이 확정
         
