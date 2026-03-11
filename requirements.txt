@@ -12,3 +12,4 @@
 ## pip
 mplcursors
 python-dotenv
+pip install TA-Lib

@@ -4,11 +4,7 @@ import os
 from xml.etree import ElementTree as ET
 import numpy as np
 import pandas as pd
-
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-mpl.rcParams["font.family"] = "Malgun Gothic"
-mpl.rcParams["axes.unicode_minus"] = False
 
 ############ load config.yaml ########################
 def load_yaml(path='config.yaml'):
