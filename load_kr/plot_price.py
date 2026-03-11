@@ -2,13 +2,20 @@ from load_price import crawl_price, ws_to_df
 from utils import plot_with_sma
 
 import matplotlib as mpl
-mpl.rcParams["font.family"] = "NanumGothic"
+#mpl.rcParams["font.family"] = "NanumGothic"
+mpl.rcParams["font.family"] = "Malgun Gothic"
 mpl.rcParams["axes.unicode_minus"] = False
 
 import talib
 from dotenv import load_dotenv
 
 if __name__ == "__main__":
+    import matplotlib.font_manager as fm
+
+    fonts = sorted(set([f.name for f in fm.fontManager.ttflist]))
+    for font in fonts:
+        if "Nanum" in font or "Malgun" in font:
+            print(font)
     load_dotenv() # .env 파일에 저장된 환경 변수를 로드
     corp_name, start_date, end_date = "한화손해보험", "2025-02-02", "2026-03-10"
 
