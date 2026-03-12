@@ -1,15 +1,11 @@
 # python == 3.10
 
 
-## condas
-# conda install pandas -y
-# conda install urllib3 -y
-# conda install requests -y
-# conda install openpyxl -y
-# conda install beautifulsoup4 -y
-# conda install pyyaml -y
 
 ## pip
 mplcursors
 python-dotenv
-pip install TA-Lib
+TA-Lib
+vllm
+openai>=1.99.1,<2.25.0
+tabulate

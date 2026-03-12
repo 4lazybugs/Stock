@@ -154,7 +154,7 @@ def fetch_code(target_corp_name, api_key=None):
 ############################################################################
 
 
-def crawl_price(corp_name, start_date, end_date, save_dir = "data"):
+def crawl_price(corp_name, start_date, end_date):
     """
     특정 종목의 주가 데이터를 크롤링하고 엑셀로 저장
     """
@@ -186,15 +186,6 @@ def crawl_price(corp_name, start_date, end_date, save_dir = "data"):
             int(low.replace(",", "")),
             int(volume.replace(",", "")) if volume != "" else 0,
         ])
-
-    save_path_dir = f"../{save_dir}/{corp_name}_{start_date}_{end_date}"
-    os.makedirs(save_path_dir, exist_ok=True)
-
-    save_path = os.path.join(save_path_dir, "PRICE_day.xlsx")
-
-    wb.save(save_path)
-
-    print(f"✅ 저장 완료: {save_path}")
 
     return ws
 

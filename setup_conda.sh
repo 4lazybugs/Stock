@@ -1,0 +1,7 @@
+## condas
+conda install pandas -y
+conda install urllib3 -y
+conda install requests -y
+conda install openpyxl -y
+conda install beautifulsoup4 -y
+conda install pyyaml -y

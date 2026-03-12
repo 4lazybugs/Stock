@@ -35,7 +35,7 @@ def get_config():
 
 
 ############### plot with SMA ##########################
-def plot_with_sma(data_dict, start_date, end_date):
+def plot_with_sma(data_dict, start_date, end_date, save_dir="figs"):
     corp_name = data_dict["corp_name"]
 
     # 1. 딕셔너리 내 Series들을 하나로 묶어서 관리 (정렬/필터링 편의성)
@@ -71,4 +71,12 @@ def plot_with_sma(data_dict, start_date, end_date):
     plt.legend(fontsize=20, loc="upper left")
     plt.grid(False)
     plt.tight_layout()
+
+    save_path_dir = f"{save_dir}/{corp_name}_{start_date}_{end_date}"
+    os.makedirs(save_path_dir, exist_ok=True)
+    save_path = os.path.join(save_path_dir, "PRICE_day.png")
+    
+    plt.savefig(save_path, dpi=600, bbox_inches="tight")
+    print(f"✅ 저장 완료: {save_path}")
+    
     plt.show()
